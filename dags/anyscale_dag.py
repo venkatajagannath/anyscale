@@ -37,6 +37,7 @@ create_anyscale_cloud = CreateAnyscaleCloud(
 
 submit_anyscale_job = SubmitAnyscaleJob(
     task_id='submit_anyscale_job',
+    conn_id= '234',
     job_name= "123",
     cluster_env= "234",
     entrypoint='python script.py',
