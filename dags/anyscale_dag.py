@@ -37,8 +37,9 @@ create_anyscale_cloud = CreateAnyscaleCloud(
 
 submit_anyscale_job = SubmitAnyscaleJob(
     task_id='submit_anyscale_job',
-    conn_id='anyscale',  # Connection ID to use
-    job_config={'job_name': 'example_job'},  # Example config, adjust as needed
+    job_name= "123",
+    cluster_env= "234",
+    entrypoint='python script.py'
     dag=dag,
 )
 
