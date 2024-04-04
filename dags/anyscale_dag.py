@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 # Assuming these hooks and operators are custom or provided by a plugin
-from providers.anyscale.operators import CreateAnyscaleCloud, SubmitAnyScaleJob
-from providers.anyscale.hooks import AnyscaleHook
+from providers.anyscale.operators.anyscale import CreateAnyscaleCloud, SubmitAnyscaleJob
+from providers.anyscale.hooks.anyscale import AnyscaleHook
 
 default_args = {
     'owner': 'airflow',
@@ -35,7 +35,7 @@ create_anyscale_cloud = CreateAnyscaleCloud(
     dag=dag,
 )
 
-submit_anyscale_job = SubmitAnyScaleJob(
+submit_anyscale_job = SubmitAnyscaleJob(
     task_id='submit_anyscale_job',
     conn_id='anyscale',  # Connection ID to use
     job_config={'job_name': 'example_job'},  # Example config, adjust as needed
