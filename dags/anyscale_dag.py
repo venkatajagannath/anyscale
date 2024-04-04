@@ -39,7 +39,7 @@ submit_anyscale_job = SubmitAnyscaleJob(
     task_id='submit_anyscale_job',
     job_name= "123",
     cluster_env= "234",
-    entrypoint='python script.py'
+    entrypoint='python script.py',
     dag=dag,
 )
 
