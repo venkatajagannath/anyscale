@@ -2,8 +2,8 @@
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 from airflow.utils.context import Context
-from custom_plugins.anyscale_hooks import AnyscaleHook
-from custom_plugins.anyscale_triggers import AnyscaleJobTrigger
+from providers.anyscale.hooks.anyscale import AnyscaleHook
+from providers.anyscale.triggers.anyscale import AnyscaleJobTrigger
 
 # Import the DeferrableOperatorMixin and TriggerRule
 from airflow.models.baseoperator import BaseOperator, BaseOperatorLink
