@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 # Assuming these hooks and operators are custom or provided by a plugin
-from include.providers.anyscale.operators import CreateAnyscaleCloud, SubmitAnyScaleJob
-from include.providers.anyscale.hooks import AnyscaleHook
+from ..include.providers.anyscale.operators import CreateAnyscaleCloud, SubmitAnyScaleJob
+from ..include.providers.anyscale.hooks import AnyscaleHook
 
 default_args = {
     'owner': 'airflow',
