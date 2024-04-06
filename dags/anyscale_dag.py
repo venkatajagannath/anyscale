@@ -2,8 +2,9 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 # Assuming these hooks and operators are custom or provided by a plugin
-from providers.anyscale.operators.anyscale import CreateAnyscaleCloud, SubmitAnyscaleJob
+from providers.anyscale.operators.anyscale import SubmitAnyscaleJob
 from providers.anyscale.hooks.anyscale import AnyscaleHook
+from providers.anyscale.models.CreateProductionJobConfig import RayRuntimeEnvConfig,JobConfiguration
 
 default_args = {
     'owner': 'airflow',
@@ -23,31 +24,22 @@ dag = DAG(
     catchup=False,
 )
 
-start = DummyOperator(
-    task_id='start',
-    dag=dag,
-)
+runtime_env = RayRuntimeEnvConfig(working_dir='./',
+                                  pip=['requests,pandas,numpy,torch'])
 
-create_anyscale_cloud = CreateAnyscaleCloud(
-    task_id='create_anyscale_cloud',
-    conn_id='anyscale',  # Connection ID to use
-    cloud_config={'region': 'us-west-2'},  # Example config, adjust as needed
-    dag=dag,
-)
 
 submit_anyscale_job = SubmitAnyscaleJob(
     task_id='submit_anyscale_job',
-    conn_id= '234',
-    job_name= "123",
-    cluster_env= "234",
+    conn_id= "",
+    job_name="Basic ray job",
+    build_id='',
     entrypoint='python script.py',
+    compute_config_id='',
+    runtime_env= runtime_env,
+    max_retries=10,
     dag=dag,
 )
 
-end = DummyOperator(
-    task_id='end',
-    dag=dag,
-)
 
 # Defining the task sequence
-start >> create_anyscale_cloud >> submit_anyscale_job >> end
+submit_anyscale_job

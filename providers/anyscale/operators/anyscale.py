@@ -17,8 +17,8 @@ import logging
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-class CreateAnyscaleCloud(BaseOperator):
-    @apply_defaults
+"""class CreateAnyscaleCloud(BaseOperator):
+    
     def __init__(self,
                 conn_id,
                 cloud_config,
@@ -45,7 +45,7 @@ class CreateAnyscaleCloud(BaseOperator):
         
         logging.info(f"Created Anyscale cloud with ID: {result.id}")
 
-        return
+        return"""
 
 
 
@@ -54,19 +54,21 @@ class SubmitAnyscaleJob(BaseOperator):
     def __init__(self,
                  conn_id: str,
                  job_name: str,
-                 cluster_env: str,
+                 build_id: str,
                  entrypoint: str,
-                 compute_config: str = None,                 
+                 compute_config_id: str = None,
+                 compute_config: dict = None,                 
                  runtime_env: str = None,                 
                  max_retries: int = None,
                  *args, **kwargs):
         super(SubmitAnyscaleJob, self).__init__(*args, **kwargs)
         self.conn_id = conn_id
         self.job_name = job_name
-        self.compute_config = compute_config
-        self.cluster_env = cluster_env
+        self.build_id = build_id
         self.runtime_env = runtime_env
         self.entrypoint = entrypoint
+        self.compute_config_id = compute_config_id
+        self.compute_config = compute_config
         self.max_retries = max_retries
 
         if not self.entrypoint:
@@ -74,30 +76,27 @@ class SubmitAnyscaleJob(BaseOperator):
         if not self.cluster_env:
             raise AirflowException("Cluster env is required.")
 
-    def create_compute_config(self):
-        pass
-
-    def create_cluster_env(self):
-        pass
-
-    def create_runtime_env(self):
-        pass
-
     
     def execute(self, context: Context):
         
         sdk = AnyscaleHook(conn_id=self.conn_id)
 
+        job_config = CreateProductionJobConfig(entrypoint = self.entrypoint,
+                                               runtime_env = self.runtime_env,
+                                               build_id = self.build_id,
+                                               compute_config_id = self.compute_config_id,
+                                               compute_config = self.compute_config,
+                                               max_retries = self.max_retries)
+
         # Submit the job to Anyscale
-        job = sdk.create_job(CreateProductionJob(
-                                    name="my-production-job",
-                                    description="A production job running on Anyscale.",
-                                    config=None
-                                ))
-        self.log.info(f"Submitted Anyscale job with ID: {job_id}")
+        prod_job : ProductionjobResponse = sdk.create_job(CreateProductionJob(
+                                    name=self.job_name,
+                                    config=job_config))
+        
+        self.log.info(f"Submitted Anyscale job with ID: {prod_job.result.id}")
         
         # Instead of returning, defer the operator's execution using the trigger
-        self.defer(trigger=AnyscaleJobTrigger(conn_id=self.conn_id, job_id=job_id), 
+        self.defer(trigger=AnyscaleJobTrigger(conn_id=self.conn_id, job_id=prod_job.result.id), 
                    method_name="execute_complete")
 
     def execute_complete(self, context: Context, event: TriggerEvent) -> None:
