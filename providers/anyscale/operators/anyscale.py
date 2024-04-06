@@ -73,7 +73,7 @@ class SubmitAnyscaleJob(BaseOperator):
 
         if not self.entrypoint:
             raise AirflowException("Entrypoint is required.")
-        if not self.cluster_env:
+        if not self.job_name:
             raise AirflowException("Cluster env is required.")
 
     

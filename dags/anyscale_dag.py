@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from airflow import DAG
-from airflow.operators.dummy_operator import DummyOperator
 # Assuming these hooks and operators are custom or provided by a plugin
 from providers.anyscale.operators.anyscale import SubmitAnyscaleJob
 from providers.anyscale.hooks.anyscale import AnyscaleHook
