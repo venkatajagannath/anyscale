@@ -152,7 +152,7 @@ class SubmitAnyscaleJob(BaseOperator,AnyscaleBaseOperator):
         self.log.info(f"Anyscale job {self.production_job_id} completed with status: {event['status']}")
 
         if event["status"] in ("OUT_OF_RETRIES", "TERMINATED", "ERRORED"):
-            self.log.info(f"Anyscale job {self.production_job_id} ended with status : {event["status"]}")
+            self.log.info(f"Anyscale job {self.production_job_id} ended with status : {event['status']}")
 
         return None
 
