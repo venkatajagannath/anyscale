@@ -1,5 +1,4 @@
 from airflow.triggers.base import BaseTrigger, TriggerEvent
-from providers.anyscale.operators.anyscale import AnyscaleBaseOperator
 import asyncio
 from typing import Any
 import time
