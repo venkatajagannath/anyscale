@@ -11,11 +11,33 @@ from airflow.triggers.base import BaseTrigger, TriggerEvent
 from airflow.exceptions import AirflowException
 
 import anyscale
+from anyscale import AnyscaleSDK
+from airflow.utils.context import Context
+
+from typing import Optional
+from airflow.models.baseoperator import BaseOperator
+from airflow.compat.functools import cached_property
 from anyscale.sdk.anyscale_client.models import *
 import logging
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
+
+class AnyscaleBaseOperator():
+    def __init__(
+        self,
+        *,
+        auth_token: str,
+        poke_interval: Optional[int] = 60,
+        **kwargs
+    ):
+        self.auth_token = auth_token
+        self.poke_interval = poke_interval
+        super().__init__(**kwargs)
+
+    @cached_property
+    def sdk(self) -> AnyscaleSDK:
+        return AnyscaleSDK(auth_token=self.auth_token)
 
 """class CreateAnyscaleCloud(BaseOperator):
     
@@ -49,7 +71,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 
-class SubmitAnyscaleJob(BaseOperator):
+class SubmitAnyscaleJob(BaseOperator,AnyscaleBaseOperator):
     
     def __init__(self,
                  conn_id: str,
@@ -62,7 +84,6 @@ class SubmitAnyscaleJob(BaseOperator):
                  max_retries: int = None,
                  *args, **kwargs):
         super(SubmitAnyscaleJob, self).__init__(*args, **kwargs)
-        self.conn_id = conn_id
         self.job_name = job_name
         self.build_id = build_id
         self.runtime_env = runtime_env
@@ -79,8 +100,10 @@ class SubmitAnyscaleJob(BaseOperator):
     
     def execute(self, context: Context):
         
-        sdk = AnyscaleHook(conn_id=self.conn_id)
-
+        if not self.auth_token:
+            self.log.info(f"Auth token is not available...")
+            raise AirflowException("Auth token is not available")
+        
         job_config = CreateProductionJobConfig(entrypoint = self.entrypoint,
                                                runtime_env = self.runtime_env,
                                                build_id = self.build_id,
@@ -89,17 +112,47 @@ class SubmitAnyscaleJob(BaseOperator):
                                                max_retries = self.max_retries)
 
         # Submit the job to Anyscale
-        prod_job : ProductionjobResponse = sdk.create_job(CreateProductionJob(
+        prod_job : ProductionjobResponse = self.sdk.create_job(CreateProductionJob(
                                     name=self.job_name,
                                     config=job_config))
-        
         self.log.info(f"Submitted Anyscale job with ID: {prod_job.result.id}")
+
+        current_status = self.get_current_status()
+        self.log.info(f"Current status for {prod_job.result.id} is: {current_status.current_state}")
+
+        if current_status in ("RUNNING","AWAITING_CLUSTER_START","PENDING","RESTARTING","UPDATING"):
+            
+            self.log.info(f"Deferring the polling to AnyscaleJobTrigger...")
+            self.defer(trigger=AnyscaleJobTrigger(
+                auth_token = self.auth_token,
+                job_id = prod_job.result.id,
+                job_start_time = prod_job.result.created_at,
+                poll_interval = 60), 
+                    method_name="execute_complete")
+        elif current_status == "SUCCESS":
+            self.log.info(f"Job {prod_job.result.id} completed successfully")
+            return
+        elif current_status in ("ERRORED","BROKEN","OUT_OF_RETRIES"):
+            raise AirflowException(f"Job {prod_job.result.id} failed")
+        elif current_status == "TERMINATED":
+            raise AirflowException(f"Job {prod_job.result.id} was cancelled")
+        else:
+            raise Exception(f"Encountered unexpected state `{current_status}` for job_id `{prod_job.result.id}")
         
-        # Instead of returning, defer the operator's execution using the trigger
-        self.defer(trigger=AnyscaleJobTrigger(conn_id=self.conn_id, job_id=prod_job.result.id), 
-                   method_name="execute_complete")
+        return prod_job.result.id
+    
+    def get_current_status(self,job_id: str) -> str:
+        return self.sdk.get_production_job(
+                production_job_id=self.production_job_id).result.state.current_state
 
     def execute_complete(self, context: Context, event: TriggerEvent) -> None:
+
+        self.production_job_id = event["production_job_id"]
         # This method gets called when the trigger fires that the job is complete
-        self.log.info(f"Anyscale job completed with status: {event.payload['status']}")
+        self.log.info(f"Anyscale job {self.production_job_id} completed with status: {event.payload['status']}")
+
+        if event["status"] in ("OUT_OF_RETRIES", "TERMINATED", "ERRORED"):
+            self.log.info(f"Anyscale job {self.production_job_id} ended with status : {event["status"]}")
+
+        return None
 
