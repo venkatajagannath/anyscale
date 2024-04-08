@@ -149,7 +149,7 @@ class SubmitAnyscaleJob(BaseOperator,AnyscaleBaseOperator):
 
         self.production_job_id = event["production_job_id"]
         # This method gets called when the trigger fires that the job is complete
-        self.log.info(f"Anyscale job {self.production_job_id} completed with status: {event.payload['status']}")
+        self.log.info(f"Anyscale job {self.production_job_id} completed with status: {event['status']}")
 
         if event["status"] in ("OUT_OF_RETRIES", "TERMINATED", "ERRORED"):
             self.log.info(f"Anyscale job {self.production_job_id} ended with status : {event["status"]}")
