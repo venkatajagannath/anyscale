@@ -29,7 +29,7 @@ runtime_env = RayRuntimeEnvConfig(working_dir='./ray_scripts',
 
 submit_anyscale_job = SubmitAnyscaleJob(
     task_id='submit_anyscale_job',
-    auth_token = 'aph0_CkYwRAIgYZCgy_uLwcNj6hs0lR9pBJHuXNNS_EnMNRUuex0E8LYCIB6uM7IN1fZ94Xcow9oq-4IcQfNVxyTjT9jglrG7pC6pEmESIKcVEKk-rzB5180goqh95e6cXOnhuiqlaLNC73APutT0GAEiHnVzcl91d2Njd2tmdTgzemV3YTVxYzdmcGF1aWM1cDoLCNG_spASEPjssyRCCwilgdKwBhD47LMk8gEA',
+    auth_token = 'aph0_CkgwRgIhAMTnvzfldx9Y2O6ZButQxNnhabK9l29-tuniLuqx06w9AiEAkpipIq2s8nuS9H16vkRf5I0ZkdjSBsiPAoED24xLzM8SYxIgpnF-XZEDsT-vB9CmhIaffdz3f9FlQE1MNjuUfnPc5D8YASIedXNyX3V3Y2N3a2Z1ODN6ZXdhNXFjN2ZwYXVpYzVwOgwI6_C1kBIQqIzOngJCDAi_stWwBhCojM6eAvIBAA',
     job_name = 'AstroJob',
     build_id = 'ses_95yuixd4xs8k5ns7euf2izif1d',
     entrypoint = 'python ./script.py',
