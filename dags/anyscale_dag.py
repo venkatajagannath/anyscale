@@ -35,7 +35,7 @@ submit_anyscale_job = SubmitAnyscaleJob(
     entrypoint = 'python ./script.py',
     compute_config_id = 'cpt_wbkzkfzfjpngn71bcgp1mvdcsa',
     compute_config = None,
-    runtime_env = runtime_env.to_dict,
+    runtime_env = runtime_env.to_json,
     max_retries= 5,
     dag=dag,
 )
