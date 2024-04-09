@@ -39,42 +39,11 @@ class AnyscaleBaseOperator():
     def sdk(self) -> AnyscaleSDK:
         return AnyscaleSDK(auth_token=self.auth_token)
 
-"""class CreateAnyscaleCloud(BaseOperator):
-    
-    def __init__(self,
-                conn_id,
-                cloud_config,
-                xcom_push: bool = False,
-                *args, **kwargs):
-        super(CreateAnyscaleCloud, self).__init__(*args, **kwargs)
-        self.conn_id = conn_id
-        self.cloud_config = cloud_config
-
-    def execute(self, context):
-        hook = AnyscaleHook(conn_id=self.conn_id)
-        # Assuming the hook has a method create_cloud for creating an Anyscale cloud environment
-
-        host = hook.host
-        token = hook.token
-
-        sdk = self.sdk_connection(host,token)
-
-        result = sdk.create_cloud(self.cloud_config)
-
-        # Pushing a dictionary to XCom
-        self.xcom_push(context=context, key='AnyscaleCloud', value=result)
-        logging.info("Pushed dictionary to XCom.")
-        
-        logging.info(f"Created Anyscale cloud with ID: {result.id}")
-
-        return"""
-
-
 
 class SubmitAnyscaleJob(BaseOperator,AnyscaleBaseOperator):
     
     def __init__(self,
-                 conn_id: str,
+                 auth_token: str,
                  job_name: str,
                  build_id: str,
                  entrypoint: str,
@@ -84,6 +53,7 @@ class SubmitAnyscaleJob(BaseOperator,AnyscaleBaseOperator):
                  max_retries: int = None,
                  *args, **kwargs):
         super(SubmitAnyscaleJob, self).__init__(*args, **kwargs)
+        self.auth_token = auth_token
         self.job_name = job_name
         self.build_id = build_id
         self.runtime_env = runtime_env

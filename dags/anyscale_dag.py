@@ -23,19 +23,20 @@ dag = DAG(
     catchup=False,
 )
 
-runtime_env = RayRuntimeEnvConfig(working_dir='./',
+runtime_env = RayRuntimeEnvConfig(working_dir='./ray_scripts',
                                   pip=['requests,pandas,numpy,torch'])
 
 
 submit_anyscale_job = SubmitAnyscaleJob(
     task_id='submit_anyscale_job',
-    conn_id= "",
-    job_name="Basic ray job",
-    build_id='',
-    entrypoint='python script.py',
-    compute_config_id='',
-    runtime_env= runtime_env,
-    max_retries=10,
+    auth_token = 'aph0_CkYwRAIgYZCgy_uLwcNj6hs0lR9pBJHuXNNS_EnMNRUuex0E8LYCIB6uM7IN1fZ94Xcow9oq-4IcQfNVxyTjT9jglrG7pC6pEmESIKcVEKk-rzB5180goqh95e6cXOnhuiqlaLNC73APutT0GAEiHnVzcl91d2Njd2tmdTgzemV3YTVxYzdmcGF1aWM1cDoLCNG_spASEPjssyRCCwilgdKwBhD47LMk8gEA',
+    job_name = 'AstroJob',
+    build_id = 'ses_95yuixd4xs8k5ns7euf2izif1d',
+    entrypoint = 'python ./script.py',
+    compute_config_id = 'cpt_wbkzkfzfjpngn71bcgp1mvdcsa',
+    compute_config = None,
+    runtime_env = runtime_env,
+    max_retries= 5,
     dag=dag,
 )
 
