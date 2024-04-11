@@ -10,6 +10,7 @@ class RayRuntimeEnvConfig:
     pip: Optional[List[str]] = field(default_factory=list)
     conda: Optional[Union[Dict[str, Any], str]] = None
     env_vars: Optional[Dict[str, str]] = field(default_factory=dict)
+    upload_path: str = working_dir
 
     def to_dict(self) -> dict:
         return asdict(self)

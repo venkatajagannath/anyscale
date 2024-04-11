@@ -35,7 +35,7 @@ submit_anyscale_job = SubmitAnyscaleJob(
     entrypoint = 'python ./ray_scripts/script.py',
     compute_config_id = 'cpt_8kfdcvmckjnjqd1xwnctmpldl4',
     compute_config = None,
-    runtime_env = runtime_env.to_dict(),
+    runtime_env = None,
     max_retries= 2,
     dag=dag,
 )
