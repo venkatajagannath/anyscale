@@ -32,11 +32,11 @@ submit_anyscale_job = SubmitAnyscaleJob(
     auth_token = 'aph0_CkgwRgIhAMTnvzfldx9Y2O6ZButQxNnhabK9l29-tuniLuqx06w9AiEAkpipIq2s8nuS9H16vkRf5I0ZkdjSBsiPAoED24xLzM8SYxIgpnF-XZEDsT-vB9CmhIaffdz3f9FlQE1MNjuUfnPc5D8YASIedXNyX3V3Y2N3a2Z1ODN6ZXdhNXFjN2ZwYXVpYzVwOgwI6_C1kBIQqIzOngJCDAi_stWwBhCojM6eAvIBAA',
     job_name = 'AstroJob',
     build_id = 'anyscaleray2100-py39',
-    entrypoint = 'python ./usr/local/airflow/dags/ray_scripts/script.py',
+    entrypoint = 'python ./ray_scripts/script.py',
     compute_config_id = 'cpt_8kfdcvmckjnjqd1xwnctmpldl4',
     compute_config = None,
-    runtime_env = runtime_env,
-    max_retries= 5,
+    runtime_env = runtime_env.to_dict(),
+    max_retries= 2,
     dag=dag,
 )
 
