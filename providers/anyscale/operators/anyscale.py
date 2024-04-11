@@ -87,7 +87,7 @@ class SubmitAnyscaleJob(BaseOperator,AnyscaleBaseOperator):
                                     config=job_config))
         self.log.info(f"Submitted Anyscale job with ID: {prod_job.result.id}")
 
-        current_status = self.get_current_status()
+        current_status = self.get_current_status(prod_job.result.id)
         self.log.info(f"Current status for {prod_job.result.id} is: {current_status.current_state}")
 
         if current_status in ("RUNNING","AWAITING_CLUSTER_START","PENDING","RESTARTING","UPDATING"):
@@ -113,7 +113,7 @@ class SubmitAnyscaleJob(BaseOperator,AnyscaleBaseOperator):
     
     def get_current_status(self,job_id: str) -> str:
         return self.sdk.get_production_job(
-                production_job_id=self.production_job_id).result.state.current_state
+                production_job_id=job_id).result.state.current_state
 
     def execute_complete(self, context: Context, event: TriggerEvent) -> None:
 
