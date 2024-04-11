@@ -35,7 +35,7 @@ submit_anyscale_job = SubmitAnyscaleJob(
     entrypoint = 'python ./usr/local/airflow/dags/ray_scripts/script.py',
     compute_config_id = 'cpt_8kfdcvmckjnjqd1xwnctmpldl4',
     compute_config = None,
-    runtime_env = None,
+    runtime_env = runtime_env,
     max_retries= 5,
     dag=dag,
 )
