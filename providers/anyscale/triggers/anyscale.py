@@ -24,7 +24,7 @@ class AnyscaleJobTrigger(BaseTrigger):
         return AnyscaleSDK(auth_token=self.auth_token)
 
     def serialize(self):
-        return ("custom_plugins.anyscale_triggers.AnyscaleJobTrigger", 
+        return ("providers.anyscale.triggers.anyscale.AnyscaleJobTrigger", 
                 {"job_id": self.job_id})
 
     async def run(self):
@@ -50,7 +50,7 @@ class AnyscaleJobTrigger(BaseTrigger):
             self.log.info(f"Job {self.job_id}completed execution before the timeout period...")
             
             completed_status = self.get_current_status(self.job_id)
-            self.log.info(f"Status of completed job {self.job_id} is: {completed_status}")
+            self.log.info(f"Status of completed job {self.job_id} is: {completed_status.current_state}")
             if completed_status.current_state == 'SUCCESS':
                 yield TriggerEvent(
                     {
