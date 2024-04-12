@@ -20,7 +20,7 @@ class AnyscaleJobTrigger(BaseTrigger):
         self.poll_interval = poll_interval
         self.end_time = time.time() + timeout
 
-        self.log = logging.getLogger(self.__class__.__name__)
+        self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(logging.INFO)
 
     @cached_property
@@ -38,10 +38,10 @@ class AnyscaleJobTrigger(BaseTrigger):
 
     async def run(self):
         if not self.job_id:
-            print("No job_id provided")
+            self.logger("No job_id provided")
             yield TriggerEvent({"status": "error", "message": "No job_id provided to async trigger", "job_id": self.job_id})
         try:
-            self.log.info(f"Polling for job {self.job_id} every {self.poll_interval} seconds...")
+            self.logger.info(f"Polling for job {self.job_id} every {self.poll_interval} seconds...")
             while self.check_current_status(self.job_id):
                 if time.time() > self.end_time:
                     yield TriggerEvent(
@@ -53,7 +53,7 @@ class AnyscaleJobTrigger(BaseTrigger):
                     )
                     return
                 await asyncio.sleep(self.poll_interval)
-            self.log.info(f"Job {self.job_id} completed execution before the timeout period...")
+            self.logger.info(f"Job {self.job_id} completed execution before the timeout period...")
             completed_status = self.get_current_status(self.job_id)
             yield TriggerEvent(
                 {
@@ -63,7 +63,7 @@ class AnyscaleJobTrigger(BaseTrigger):
                 }
             )
         except Exception as e:
-            self.log.error("An error occurred:", exc_info=True)
+            self.logger.error("An error occurred:", exc_info=True)
             yield TriggerEvent({"status": "error", "message": str(e), "job_id": self.job_id})
 
     def get_current_status(self, job_id: str):
@@ -71,5 +71,5 @@ class AnyscaleJobTrigger(BaseTrigger):
         
     def check_current_status(self, job_id: str) -> bool:
         job_status = self.get_current_status(job_id)
-        self.log.info(f"Current job status for {job_id} is: {job_status}")
+        self.logger.info(f"Current job status for {job_id} is: {job_status}")
         return job_status in ('RUNNING', 'PENDING', 'AWAITING_CLUSTER_START', 'RESTARTING')
