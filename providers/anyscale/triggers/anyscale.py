@@ -53,6 +53,7 @@ class AnyscaleJobTrigger(BaseTrigger):
                     )
                     return
                 await asyncio.sleep(self.poll_interval)
+
             self.logger.info(f"Job {self.job_id} completed execution before the timeout period...")
             completed_status = self.get_current_status(self.job_id)
             yield TriggerEvent(

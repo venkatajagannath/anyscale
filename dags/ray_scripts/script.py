@@ -5,5 +5,4 @@ import ray
 def hello_world():
     return "hello world"
 
-ray.init()
 print(ray.get(hello_world.remote()))
