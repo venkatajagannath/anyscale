@@ -36,7 +36,7 @@ conn = Connection(
 # Constants
 BUCKET_NAME = 'anyscale-production-data-cld-g7m5cn8nnhkydikcjc6lj4ekye/'
 FOLDER_PATH = './ray_scripts'
-AWS_CONN_ID = 'your_aws_conn_id'
+AWS_CONN_ID = 'aws_conn'
 
 dag = DAG(
     'anyscale_workflow',
