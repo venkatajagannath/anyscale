@@ -34,7 +34,7 @@ conn = Connection(
 )
 
 # Constants
-BUCKET_NAME = 'anyscale-production-data-cld-g7m5cn8nnhkydikcjc6lj4ekye/'
+BUCKET_NAME = 'anyscale-production-data-cld-g7m5cn8nnhkydikcjc6lj4ekye'
 FILE_PATH = '/usr/local/airflow/dags/ray_scripts/script.py'
 AWS_CONN_ID = 'aws_conn'
 
