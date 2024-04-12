@@ -11,6 +11,7 @@ from airflow.triggers.base import BaseTrigger, TriggerEvent
 from airflow.exceptions import AirflowException
 
 import anyscale
+import os
 from anyscale import AnyscaleSDK
 from airflow.utils.context import Context
 
@@ -88,7 +89,7 @@ class SubmitAnyscaleJob(BaseOperator,AnyscaleBaseOperator):
         self.log.info(f"Submitted Anyscale job with ID: {prod_job.result.id}")
 
         current_status = self.get_current_status(prod_job.result.id)
-        self.log.info(f"Current status for {prod_job.result.id} is: {current_status.current_state}")
+        self.log.info(f"Current status for {prod_job.result.id} is: {current_status}")
 
         if current_status in ("RUNNING","AWAITING_CLUSTER_START","PENDING","RESTARTING","UPDATING"):
             
