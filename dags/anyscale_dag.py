@@ -35,7 +35,7 @@ conn = Connection(
 
 # Constants
 BUCKET_NAME = 'anyscale-production-data-cld-g7m5cn8nnhkydikcjc6lj4ekye/'
-FOLDER_PATH = './ray_scripts'
+FILE_PATH = './ray_scripts/script.py'
 AWS_CONN_ID = 'aws_conn'
 
 dag = DAG(
@@ -49,27 +49,19 @@ dag = DAG(
 runtime_env = RayRuntimeEnvConfig(working_dir='s3://anyscale-production-data-cld-g7m5cn8nnhkydikcjc6lj4ekye/scripts/',
                                   pip=['requests,pandas,numpy,torch'])
 
-def list_files():
-    """ Generate a list of files to be uploaded """
-    for root, dirs, files in os.walk(FOLDER_PATH):
-        for file in files:
-            yield os.path.join(root, file)
+# Extract the filename from the file path for S3 key construction
+filename = os.path.basename(FILE_PATH)
+s3_key = f'scripts/{filename}'
 
-
-# Dynamically create tasks for each file
-for file_path in list_files():
-    filename = file_path[len(FOLDER_PATH):].lstrip(os.sep)
-    s3_key = os.path.join('scripts', filename)
-    
-    upload_task = LocalFilesystemToS3Operator(
-        task_id=f'upload_{filename.replace(os.sep, "_")}',  # Create a valid task id
-        filename=file_path,
-        dest_key=s3_key,
-        dest_bucket=BUCKET_NAME,
-        aws_conn_id=AWS_CONN_ID,
-        replace=True,
-        dag=dag
-    )
+upload_file_to_s3 = LocalFilesystemToS3Operator(
+    task_id='upload_file_to_s3',
+    filename=FILE_PATH,
+    dest_key=s3_key,
+    dest_bucket=BUCKET_NAME,
+    aws_conn_id=AWS_CONN_ID,
+    replace=True,
+    dag=dag
+)
 
 
 submit_anyscale_job = SubmitAnyscaleJob(
@@ -87,4 +79,4 @@ submit_anyscale_job = SubmitAnyscaleJob(
 
 
 # Defining the task sequence
-submit_anyscale_job
+upload_file_to_s3 >> submit_anyscale_job
