@@ -30,6 +30,7 @@ class AnyscaleJobTrigger(BaseTrigger):
     async def run(self):
 
         if not self.job_id:
+            print("No job_id provided")
             yield TriggerEvent({"status": "error", "message": "No job_id provided to async trigger", "job_id": self.job_id})
         
         try:

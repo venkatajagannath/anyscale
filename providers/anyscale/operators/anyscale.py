@@ -94,12 +94,12 @@ class SubmitAnyscaleJob(BaseOperator,AnyscaleBaseOperator):
         if current_status in ("RUNNING","AWAITING_CLUSTER_START","PENDING","RESTARTING","UPDATING"):
             
             self.log.info(f"Deferring the polling to AnyscaleJobTrigger...")
-            self.defer(trigger=AnyscaleJobTrigger(
-                auth_token = self.auth_token,
-                job_id = prod_job.result.id,
-                job_start_time = prod_job.result.created_at,
-                poll_interval = 60), 
-                    method_name="execute_complete")
+            self.defer(trigger=AnyscaleJobTrigger(auth_token = self.auth_token,
+                                                  job_id = prod_job.result.id,
+                                                  job_start_time = prod_job.result.created_at,
+                                                  poll_interval = 60),
+                        method_name="execute_complete")
+            
         elif current_status == "SUCCESS":
             self.log.info(f"Job {prod_job.result.id} completed successfully")
             return
