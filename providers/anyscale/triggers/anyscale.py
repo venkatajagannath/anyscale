@@ -1,23 +1,25 @@
 from airflow.triggers.base import BaseTrigger, TriggerEvent
 import asyncio
-from typing import Any
 import time
-from datetime import datetime
-
+from datetime import datetime, timedelta
 from airflow.compat.functools import cached_property
 from anyscale import AnyscaleSDK
+import logging
 
 class AnyscaleJobTrigger(BaseTrigger):
     def __init__(self,
-                auth_token: str,
-                job_id: str,
-                job_start_time: datetime,
-                poll_interval: int = 60):
+                 auth_token: str,
+                 job_id: str,
+                 job_start_time: datetime,
+                 poll_interval: int = 60,
+                 timeout: int = 3600):  # Default timeout after an hour
         super().__init__()
         self.auth_token = auth_token
         self.job_id = job_id
         self.job_start_time = job_start_time
         self.poll_interval = poll_interval
+        self.end_time = time.time() + timeout
+        self.log = logging.getLogger(self.__class__.__name__)
 
     @cached_property
     def sdk(self) -> AnyscaleSDK:
@@ -25,72 +27,47 @@ class AnyscaleJobTrigger(BaseTrigger):
 
     def serialize(self):
         return ("providers.anyscale.triggers.anyscale.AnyscaleJobTrigger", 
-                {"job_id": self.job_id})
+                {
+                    "auth_token": self.auth_token,
+                    "job_id": self.job_id,
+                    "job_start_time": self.job_start_time.isoformat(),
+                    "poll_interval": self.poll_interval
+                })
 
     async def run(self):
-
         if not self.job_id:
             print("No job_id provided")
             yield TriggerEvent({"status": "error", "message": "No job_id provided to async trigger", "job_id": self.job_id})
-        
         try:
             self.log.info(f"Polling for job {self.job_id} every {self.poll_interval} seconds...")
-            
-            while self.check_current_status():
-                if self.end_time < time.time():
+            while self.check_current_status(self.job_id):
+                if time.time() > self.end_time:
                     yield TriggerEvent(
                         {
-                            "status": "error",
-                            "message": f"Job run {self.job_id} has not reached a terminal status after "
-                            f"{self.end_time} seconds.",
+                            "status": "timeout",
+                            "message": f"Job {self.job_id} has not reached a terminal status after timeout.",
                             "job_id": self.job_id,
                         }
                     )
                     return
                 await asyncio.sleep(self.poll_interval)
-            self.log.info(f"Job {self.job_id}completed execution before the timeout period...")
-            
+            self.log.info(f"Job {self.job_id} completed execution before the timeout period...")
             completed_status = self.get_current_status(self.job_id)
-            self.log.info(f"Status of completed job {self.job_id} is: {completed_status.current_state}")
-            if completed_status.current_state == 'SUCCESS':
-                yield TriggerEvent(
-                    {
-                        "status": completed_status.current_state,
-                        "message": f"Job run {self.job_id} has completed successfully.",
-                        "job_id": self.job_id,
-                        "elapsed_time": completed_status.state_transitioned_at - self.job_start_time
-                    }
-                )
-            elif completed_status.current_state in ("OUT_OF_RETRIES", "TERMINATED", "ERRORED"):
-                yield TriggerEvent(
-                    {
-                        "status": completed_status.current_state,
-                        "message": f"Job run {self.job_id} has been stopped.",
-                        "job_id": self.job_id,
-                        "elapsed_time": completed_status.state_transitioned_at - self.job_start_time
-                    }
-                )
-            else:
-                yield TriggerEvent(
-                    {
-                        "status": completed_status.current_state,
-                        "message": f"Job run {self.job_id} has failed.",
-                        "job_id": self.job_id,
-                        "elapsed_time": completed_status.state_transitioned_at - self.job_start_time
-                    }
-                )
+            yield TriggerEvent(
+                {
+                    "status": completed_status,
+                    "message": f"Job run {self.job_id} has completed with status {completed_status}.",
+                    "job_id": self.job_id
+                }
+            )
         except Exception as e:
+            self.log.error("An error occurred:", exc_info=True)
             yield TriggerEvent({"status": "error", "message": str(e), "job_id": self.job_id})
 
-    def get_current_status(self,job_id: str):
-        return self.sdk.get_production_job(
-                production_job_id=self.production_job_id).result.state
+    def get_current_status(self, job_id: str):
+        return self.sdk.get_production_job(production_job_id=job_id).result.state.current_state
         
-    def check_current_status(self,job_id: str) -> str:
-        job_status = self.sdk.get_production_job(
-                production_job_id=self.production_job_id).result.state.current_state
-        self.log.info(f"Current job status for {self.job_id} is: {job_status}")
-        if job_status in ('RUNNING','PENDING','AWAITING_CLUSTER_START','RESTARTING'):
-            return True
-        else:
-            return False
+    def check_current_status(self, job_id: str) -> bool:
+        job_status = self.get_current_status(job_id)
+        self.log.info(f"Current job status for {job_id} is: {job_status}")
+        return job_status in ('RUNNING', 'PENDING', 'AWAITING_CLUSTER_START', 'RESTARTING')
