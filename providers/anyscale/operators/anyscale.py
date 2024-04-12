@@ -24,24 +24,7 @@ import logging
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-class AnyscaleBaseOperator():
-    def __init__(
-        self,
-        *,
-        auth_token: str,
-        poke_interval: Optional[int] = 60,
-        **kwargs
-    ):
-        self.auth_token = auth_token
-        self.poke_interval = poke_interval
-        super().__init__(**kwargs)
-
-    @cached_property
-    def sdk(self) -> AnyscaleSDK:
-        return AnyscaleSDK(auth_token=self.auth_token)
-
-
-class SubmitAnyscaleJob(BaseOperator,AnyscaleBaseOperator):
+class SubmitAnyscaleJob(BaseOperator):
     
     def __init__(self,
                  auth_token: str,
@@ -68,6 +51,9 @@ class SubmitAnyscaleJob(BaseOperator,AnyscaleBaseOperator):
         if not self.job_name:
             raise AirflowException("Cluster env is required.")
 
+    @cached_property
+    def sdk(self) -> AnyscaleSDK:
+        return AnyscaleSDK(auth_token=self.auth_token)
     
     def execute(self, context: Context):
         
