@@ -12,7 +12,7 @@ class AnyscaleJobTrigger(BaseTrigger):
                  job_id: str,
                  job_start_time: datetime,
                  poll_interval: int = 60,
-                 timeout: int = 3600):  # Default timeout after an hour
+                 timeout: int = 600):  # Default timeout after an hour
         super().__init__()
         self.auth_token = auth_token
         self.job_id = job_id
