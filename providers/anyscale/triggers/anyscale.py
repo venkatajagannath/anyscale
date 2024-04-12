@@ -19,7 +19,9 @@ class AnyscaleJobTrigger(BaseTrigger):
         self.job_start_time = job_start_time
         self.poll_interval = poll_interval
         self.end_time = time.time() + timeout
+
         self.log = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(logging.INFO)
 
     @cached_property
     def sdk(self) -> AnyscaleSDK:
