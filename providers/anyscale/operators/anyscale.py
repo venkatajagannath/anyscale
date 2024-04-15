@@ -20,8 +20,6 @@ from airflow.models.baseoperator import BaseOperator
 from airflow.compat.functools import cached_property
 from anyscale.sdk.anyscale_client.models import *
 import logging
-
-import logging
 logging.basicConfig(level=logging.DEBUG)
 
 class SubmitAnyscaleJob(BaseOperator):

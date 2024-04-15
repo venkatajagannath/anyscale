@@ -38,7 +38,7 @@ class AnyscaleJobTrigger(BaseTrigger):
 
     async def run(self):
         if not self.job_id:
-            self.logger("No job_id provided")
+            self.logger.info("No job_id provided")
             yield TriggerEvent({"status": "error", "message": "No job_id provided to async trigger", "job_id": self.job_id})
         try:
             self.logger.info(f"Polling for job {self.job_id} every {self.poll_interval} seconds...")
