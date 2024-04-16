@@ -48,7 +48,7 @@ dag = DAG(
 
 runtime_env = RayRuntimeEnvConfig(working_dir=FILE_PATH,
                                   upload_path = "s3://"+BUCKET_NAME,
-                                  pip=['requests,pandas,numpy,torch'])
+                                  pip=["requests","pandas","numpy","torch"])
 
 # Extract the filename from the file path for S3 key construction
 filename = os.path.basename(FILE_PATH)
