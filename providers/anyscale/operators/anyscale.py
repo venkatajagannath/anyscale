@@ -43,6 +43,7 @@ class SubmitAnyscaleJob(BaseOperator):
         self.compute_config_id = compute_config_id
         self.compute_config = compute_config
         self.max_retries = max_retries
+        self.job_id = None
 
         if not self.entrypoint:
             raise AirflowException("Entrypoint is required.")
@@ -52,6 +53,12 @@ class SubmitAnyscaleJob(BaseOperator):
     @cached_property
     def sdk(self) -> AnyscaleSDK:
         return AnyscaleSDK(auth_token=self.auth_token)
+    
+    def on_kill(self):
+        if self.job_id is not None:
+            job_obj = self.sdk.terminate_job(self.job_id)
+            self.log.info(f"Termination request received. Submitted request to terminate the anyscale job")
+        return
     
     def execute(self, context: Context):
         
@@ -73,6 +80,7 @@ class SubmitAnyscaleJob(BaseOperator):
         self.log.info(f"Submitted Anyscale job with ID: {prod_job.result.id}")
 
         current_status = self.get_current_status(prod_job.result.id)
+        self.job_id = prod_job.result.id
         self.log.info(f"Current status for {prod_job.result.id} is: {current_status}")
 
         if current_status in ("RUNNING","AWAITING_CLUSTER_START","PENDING","RESTARTING","UPDATING"):
