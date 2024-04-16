@@ -102,12 +102,13 @@ class SubmitAnyscaleJob(BaseOperator):
 
     def execute_complete(self, context: Context, event: TriggerEvent) -> None:
 
-        self.production_job_id = event["production_job_id"]
-        # This method gets called when the trigger fires that the job is complete
-        self.log.info(f"Anyscale job {self.production_job_id} completed with status: {event['status']}")
-
+        self.production_job_id = event["job_id"]
+        
         if event["status"] in ("OUT_OF_RETRIES", "TERMINATED", "ERRORED"):
             self.log.info(f"Anyscale job {self.production_job_id} ended with status : {event['status']}")
+        else:
+            # This method gets called when the trigger fires that the job is complete
+            self.log.info(f"Anyscale job {self.production_job_id} completed with status: {event['status']}")
 
         return None
 
