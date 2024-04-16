@@ -6,10 +6,10 @@ import yaml
 @dataclass
 class RayRuntimeEnvConfig:
     working_dir: Optional[str] = None
-    py_modules: Optional[List[str]] = field(default_factory=list)
-    pip: Optional[List[str]] = field(default_factory=list)
+    py_modules: Optional[List[str]] = None
+    pip: Optional[List[str]] = None
     conda: Optional[Union[Dict[str, Any], str]] = None
-    env_vars: Optional[Dict[str, str]] = field(default_factory=dict)
+    env_vars: Optional[Dict[str, str]] = None
     upload_path: str = None
 
     def to_dict(self) -> dict:
