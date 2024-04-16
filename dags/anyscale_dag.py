@@ -46,7 +46,7 @@ dag = DAG(
     catchup=False,
 )
 
-runtime_env = RayRuntimeEnvConfig(working_dir='s3://anyscale-production-data-cld-g7m5cn8nnhkydikcjc6lj4ekye/',
+runtime_env = RayRuntimeEnvConfig(working_dir=FILE_PATH,
                                   pip=['requests,pandas,numpy,torch'])
 
 # Extract the filename from the file path for S3 key construction
