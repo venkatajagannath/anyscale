@@ -1,5 +1,6 @@
 from airflow.hooks.base_hook import BaseHook
 from airflow.exceptions import AirflowException
+from airflow.compat.functools import cached_property
 
 import logging
 
@@ -17,6 +18,10 @@ class AnyscaleHook(BaseHook):
         self.anyscale_conn_id = anyscale_conn_id
         self.sdk = None
         logger.info(f"Initializing AnyscaleHook with connection_id: {anyscale_conn_id}")
+    
+    @cached_property
+    def sdk(self) -> AnyscaleSDK:
+        return AnyscaleSDK(auth_token=self.auth_token)
 
     def get_conn(self, **kwargs):
         """

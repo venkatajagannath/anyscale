@@ -120,3 +120,28 @@ class SubmitAnyscaleJob(BaseOperator):
 
         return None
 
+class RolloutAnyscaleService(BaseOperator):
+
+    def __init__(self):
+        return
+    
+    @cached_property
+    def sdk(self) -> AnyscaleSDK:
+        return AnyscaleSDK(auth_token=self.auth_token)
+    
+    def execute(self, context: Context):
+
+        if not self.auth_token:
+            self.log.info(f"Auth token is not available...")
+            raise AirflowException("Auth token is not available")
+        
+        service_model = ApplyServiceModel()
+
+
+        service_response = self.sdk.rollout_service(apply_service_model = service_model)
+
+
+
+        return
+    
+
