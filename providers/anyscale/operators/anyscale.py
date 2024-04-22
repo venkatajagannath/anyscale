@@ -12,7 +12,8 @@ from typing import Optional
 # Airflow imports
 from airflow.compat.functools import cached_property
 from airflow.exceptions import AirflowException
-from airflow.models import BaseOperator, Context
+from airflow.models import BaseOperator
+from airflow.utils.context import Context
 from airflow.models.baseoperator import BaseOperatorLink
 from airflow.triggers.base import BaseTrigger, TriggerEvent
 from airflow.utils.decorators import apply_defaults
