@@ -88,7 +88,7 @@ class AnyscaleServiceTrigger(BaseTrigger):
         self.service_id = service_id
         self.expected_state = expected_state
         self.poll_interval = poll_interval
-        self.timeout = timeout.total_seconds()
+        self.timeout = timeout
 
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(logging.INFO)
