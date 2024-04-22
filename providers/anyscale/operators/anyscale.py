@@ -3,7 +3,7 @@ from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 from airflow.utils.context import Context
 from providers.anyscale.hooks.anyscale import AnyscaleHook
-from providers.anyscale.triggers.anyscale import AnyscaleJobTrigger
+from providers.anyscale.triggers.anyscale import AnyscaleJobTrigger, AnyscaleServiceTrigger
 
 # Import the DeferrableOperatorMixin and TriggerRule
 from airflow.models.baseoperator import BaseOperator, BaseOperatorLink
@@ -122,26 +122,58 @@ class SubmitAnyscaleJob(BaseOperator):
 
 class RolloutAnyscaleService(BaseOperator):
 
-    def __init__(self):
-        return
-    
+    def __init__(self,
+                auth_token: str,
+                name: str,
+                ray_serve_config: object,
+                build_id: str,
+                compute_config_id: str,
+                 **kwargs):
+        super().__init__()
+        self.auth_token = auth_token
+
+
+        # Set up explicit parameters
+        self.service_params = {
+            'name': name,
+            'ray_serve_config': ray_serve_config,
+            'build_id': build_id,
+            'compute_config_id': compute_config_id
+        }
+        # Include any additional parameters
+        self.service_params.update(kwargs)
+
     @cached_property
-    def sdk(self) -> AnyscaleSDK:
+    def sdk(self) -> 'AnyscaleSDK':  # Assuming AnyscaleSDK is defined somewhere
         return AnyscaleSDK(auth_token=self.auth_token)
     
-    def execute(self, context: Context):
-
+    def execute(self, context):
         if not self.auth_token:
-            self.log.info(f"Auth token is not available...")
+            self.log.info("Auth token is not available...")
             raise AirflowException("Auth token is not available")
+
+        # Dynamically create ApplyServiceModel instance from provided parameters
+        service_model = ApplyServiceModel(**self.service_params)
         
-        service_model = ApplyServiceModel()
+        # Log the deployment configuration
+        self.log.info(f"Deploying service with configuration: {service_model.to_json()}")
+        
+        # Call the SDK method with the dynamically created service model
+        service_response = self.sdk.rollout_service(apply_service_model=service_model)
 
+        self.defer(trigger=AnyscaleServiceTrigger(auth_token = self.auth_token,
+                                        service_id = service_response.result.id,
+                                        expected_state = 'RUNNING',
+                                        poll_interval= 60,
+                                        timeout= 60),
+            method_name="execute_complete")
 
-        service_response = self.sdk.rollout_service(apply_service_model = service_model)
-
-
-
+        self.log.info(f"Service rollout response: {service_response}")
+        
+        return service_response
+    
+    def execute_complete(self):
+        self.log.info(f"Execution completed...")
         return
     
 

@@ -74,3 +74,67 @@ class AnyscaleJobTrigger(BaseTrigger):
         job_status = self.get_current_status(job_id)
         self.logger.info(f"Current job status for {job_id} is: {job_status}")
         return job_status in ('RUNNING', 'PENDING', 'AWAITING_CLUSTER_START', 'RESTARTING')
+
+
+class AnyscaleServiceTrigger(BaseTrigger):
+    def __init__(self,
+                 auth_token: str,
+                 service_id: str,
+                 expected_state: str,
+                 poll_interval: int = 60,
+                 timeout: timedelta = timedelta(minutes=20)):
+        super().__init__()
+        self.auth_token = auth_token
+        self.service_id = service_id
+        self.expected_state = expected_state
+        self.poll_interval = poll_interval
+        self.timeout = timeout.total_seconds()
+
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(logging.INFO)
+        self.end_time = time.time() + self.timeout
+
+    @cached_property
+    def sdk(self) -> AnyscaleSDK:
+        return AnyscaleSDK(auth_token=self.auth_token)
+
+    def serialize(self):
+        return ("providers.anyscale.triggers.anyscale.AnyscaleServiceTrigger", {
+            "auth_token": self.auth_token,
+            "service_id": self.service_id,
+            "expected_state": self.expected_state,
+            "poll_interval": self.poll_interval,
+            "timeout": self.timeout
+        })
+
+    async def run(self):
+        self.logger.info(f"Monitoring service {self.service_id} every {self.poll_interval} seconds to reach {self.expected_state}")
+        try:
+            while True:
+                if time.time() > self.end_time:
+                    yield TriggerEvent({
+                        "status": "timeout",
+                        "message": f"Service {self.service_id} did not reach {self.expected_state} within the timeout period."
+                    })
+                    return
+
+                service = self.sdk.get_service(self.service_id).result
+                current_state = service.current_state
+                self.logger.info(f"Current state of service {self.service_id}: {current_state}")
+
+                if current_state == self.expected_state:
+                    yield TriggerEvent({"status": "success","message":"Service deployment succeeded","service_id": self.service_id})
+                    return
+                elif current_state == 'UNHEALTHY' and self.expected_state != 'UNHEALTHY':
+                    yield TriggerEvent({
+                        "status": "failed",
+                        "message": f"Service {self.service_id} entered an unexpected state: {current_state}",
+                        "service_id": self.service_id
+                    })
+                    return
+
+                await asyncio.sleep(self.poll_interval)
+
+        except Exception as e:
+            self.logger.error("An error occurred during monitoring:", exc_info=True)
+            yield TriggerEvent({"status": "error", "message": str(e),"service_id": self.service_id})
