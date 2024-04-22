@@ -129,9 +129,8 @@ class RolloutAnyscaleService(BaseOperator):
                 build_id: str,
                 compute_config_id: str,
                  **kwargs):
-        super().__init__()
+        super(RolloutAnyscaleService, self).__init__(**kwargs)
         self.auth_token = auth_token
-
 
         # Set up explicit parameters
         self.service_params = {
