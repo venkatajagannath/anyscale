@@ -139,6 +139,11 @@ class RolloutAnyscaleService(BaseOperator):
             'build_id': build_id,
             'compute_config_id': compute_config_id
         }
+
+        # Remove task_id from kwargs
+        if 'task_id' in kwargs:
+            kwargs.pop('task_id')
+
         # Include any additional parameters
         self.service_params.update(kwargs)
 
