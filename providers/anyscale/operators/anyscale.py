@@ -1,25 +1,24 @@
 
-from airflow.models import BaseOperator
+# Standard library imports
+import logging
+import os
+
+# Third-party imports
+from anyscale import AnyscaleSDK
+from anyscale.sdk.anyscale_client.models import *
+from dataclasses import fields
+from typing import Optional
+
+# Airflow imports
+from airflow.compat.functools import cached_property
+from airflow.exceptions import AirflowException
+from airflow.models import BaseOperator, Context
+from airflow.models.baseoperator import BaseOperatorLink
+from airflow.triggers.base import BaseTrigger, TriggerEvent
 from airflow.utils.decorators import apply_defaults
-from airflow.utils.context import Context
 from providers.anyscale.hooks.anyscale import AnyscaleHook
 from providers.anyscale.triggers.anyscale import AnyscaleJobTrigger, AnyscaleServiceTrigger
 
-# Import the DeferrableOperatorMixin and TriggerRule
-from airflow.models.baseoperator import BaseOperator, BaseOperatorLink
-from airflow.triggers.base import BaseTrigger, TriggerEvent
-from airflow.exceptions import AirflowException
-
-import anyscale
-import os
-from anyscale import AnyscaleSDK
-from airflow.utils.context import Context
-
-from typing import Optional
-from airflow.models.baseoperator import BaseOperator
-from airflow.compat.functools import cached_property
-from anyscale.sdk.anyscale_client.models import *
-import logging
 logging.basicConfig(level=logging.DEBUG)
 
 class SubmitAnyscaleJob(BaseOperator):
