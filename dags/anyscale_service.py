@@ -68,11 +68,8 @@ deploy_anyscale_service = RolloutAnyscaleService(
     task_id="rollout_anyscale_service",
     auth_token="aph0_CkgwRgIhAMTnvzfldx9Y2O6ZButQxNnhabK9l29-tuniLuqx06w9AiEAkpipIq2s8nuS9H16vkRf5I0ZkdjSBsiPAoED24xLzM8SYxIgpnF-XZEDsT-vB9CmhIaffdz3f9FlQE1MNjuUfnPc5D8YASIedXNyX3V3Y2N3a2Z1ODN6ZXdhNXFjN2ZwYXVpYzVwOgwI6_C1kBIQqIzOngJCDAi_stWwBhCojM6eAvIBAA",
     name="AstroService",
-    version="1.0",
-    canary_percent=10,
     build_id="anyscaleray2100-py39",
     compute_config_id="cpt_8kfdcvmckjnjqd1xwnctmpldl4",
-    rollout_strategy='ROLLOUT',
     ray_serve_config={ 
         "applications": [
             {
