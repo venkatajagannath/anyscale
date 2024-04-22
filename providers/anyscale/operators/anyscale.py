@@ -6,7 +6,7 @@ import os
 # Third-party imports
 from anyscale import AnyscaleSDK
 from anyscale.sdk.anyscale_client.models import *
-from dataclasses import fields
+from dataclasses import dataclass, field
 from typing import Optional
 
 # Airflow imports
@@ -140,12 +140,11 @@ class RolloutAnyscaleService(BaseOperator):
             'compute_config_id': compute_config_id
         }
 
-        # Get field names from the ApplyServiceModel data class
-        valid_fields = {field.name for field in fields(ApplyServiceModel)}
+        # Remove specific keys from kwargs which are related to Airflow infrastructure
+        for key in ['task_id', 'dag', 'default_args', 'owner', 'email', 'start_date']:
+            kwargs.pop(key, None)  # Use pop with default to avoid KeyError
 
-        # Update service_params with only valid kwargs that match the data class fields
-        filtered_params = {key: value for key, value in kwargs.items() if key in valid_fields}
-        self.service_params.update(filtered_params)
+        self.service_params.update(kwargs)
 
     @cached_property
     def sdk(self) -> 'AnyscaleSDK':  # Assuming AnyscaleSDK is defined somewhere
