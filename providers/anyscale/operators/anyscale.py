@@ -165,7 +165,7 @@ class RolloutAnyscaleService(BaseOperator):
                                         service_id = service_response.result.id,
                                         expected_state = 'RUNNING',
                                         poll_interval= 60,
-                                        timeout= 60),
+                                        timeout= 600),
             method_name="execute_complete")
 
         self.log.info(f"Service rollout response: {service_response}")
