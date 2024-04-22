@@ -41,6 +41,7 @@ class RayGCSExternalStorageConfig:
 
 @dataclass
 class ApplyServiceModel:
+    task_id: str = None
     name: Optional[str] = None
     description: Optional[str] = None
     project_id: Optional[str] = None
