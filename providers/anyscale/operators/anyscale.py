@@ -172,7 +172,7 @@ class RolloutAnyscaleService(BaseOperator):
         
         return service_response
     
-    def execute_complete(self):
+    def execute_complete(self, context: Context, event: TriggerEvent) -> None:
         self.log.info(f"Execution completed...")
         return
     
