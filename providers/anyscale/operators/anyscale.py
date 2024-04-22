@@ -158,11 +158,8 @@ class RolloutAnyscaleService(BaseOperator):
         # Dynamically create ApplyServiceModel instance from provided parameters
         service_model = ApplyServiceModel(**self.service_params)
         
-        # Log the deployment configuration
-        self.log.info(f"Deploying service with configuration: {service_model.to_json()}")
-        
         # Call the SDK method with the dynamically created service model
-        service_response = self.sdk.rollout_service(apply_service_model=service_model.to_dict())
+        service_response = self.sdk.rollout_service(apply_service_model=service_model)
 
         self.defer(trigger=AnyscaleServiceTrigger(auth_token = self.auth_token,
                                         service_id = service_response.result.id,
