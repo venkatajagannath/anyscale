@@ -143,6 +143,7 @@ class RolloutAnyscaleService(BaseOperator):
         # Remove task_id from kwargs
         kwargs.pop('task_id')
         kwargs.pop('dag')
+        kwargs.pop('default_args')
 
         # Include any additional parameters
         self.service_params.update(kwargs)
