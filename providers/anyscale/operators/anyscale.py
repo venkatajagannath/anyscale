@@ -140,13 +140,12 @@ class RolloutAnyscaleService(BaseOperator):
             'compute_config_id': compute_config_id
         }
 
-        # Remove task_id from kwargs
-        kwargs.pop('task_id')
-        kwargs.pop('dag')
-        kwargs.pop('default_args')
+        # Get field names from the ApplyServiceModel data class
+        valid_fields = {field.name for field in fields(ApplyServiceModel)}
 
-        # Include any additional parameters
-        self.service_params.update(kwargs)
+        # Update service_params with only valid kwargs that match the data class fields
+        filtered_params = {key: value for key, value in kwargs.items() if key in valid_fields}
+        self.service_params.update(filtered_params)
 
     @cached_property
     def sdk(self) -> 'AnyscaleSDK':  # Assuming AnyscaleSDK is defined somewhere
