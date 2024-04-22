@@ -141,7 +141,7 @@ class RolloutAnyscaleService(BaseOperator):
         }
 
         # Remove specific keys from kwargs which are related to Airflow infrastructure
-        for key in ['task_id', 'dag', 'default_args', 'owner', 'email', 'start_date']:
+        for key in ['task_id', 'dag', 'default_args', 'owner', 'email', 'start_date','depends_on_past','email_on_failure','email_on_retry','retries','retry_delay']:
             kwargs.pop(key, None)  # Use pop with default to avoid KeyError
 
         self.service_params.update(kwargs)
