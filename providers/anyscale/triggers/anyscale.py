@@ -132,7 +132,7 @@ class AnyscaleServiceTrigger(BaseTrigger):
                                         "message":"Service deployment succeeded",
                                         "service_id": self.service_id})
                     return
-                elif current_state == 'UNHEALTHY' and self.expected_state != 'UNHEALTHY':
+                elif current_state == current_state.UNHEALTHY and self.expected_state != current_state.UNHEALTHY:
                     yield TriggerEvent({
                         "status": "failed",
                         "message": f"Service {self.service_id} entered an unexpected state: {current_state}",
