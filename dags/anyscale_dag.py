@@ -2,9 +2,9 @@ from datetime import datetime, timedelta
 from airflow import DAG
 import os
 # Assuming these hooks and operators are custom or provided by a plugin
-from include.anyscale.operators.anyscale import SubmitAnyscaleJob
-from include.anyscale.hooks.anyscale import AnyscaleHook
-from include.anyscale.models.CreateProductionJobConfig import RayRuntimeEnvConfig,JobConfiguration
+from include.operators.anyscale import SubmitAnyscaleJob
+from include.hooks.anyscale import AnyscaleHook
+from include.models.CreateProductionJobConfig import RayRuntimeEnvConfig,JobConfiguration
 
 from datetime import datetime, timedelta
 

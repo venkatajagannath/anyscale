@@ -17,8 +17,8 @@ from airflow.utils.context import Context
 from airflow.models.baseoperator import BaseOperatorLink
 from airflow.triggers.base import BaseTrigger, TriggerEvent
 from airflow.utils.decorators import apply_defaults
-from include.anyscale.hooks.anyscale import AnyscaleHook
-from include.anyscale.triggers.anyscale import AnyscaleJobTrigger, AnyscaleServiceTrigger
+from include.hooks.anyscale import AnyscaleHook
+from include.triggers.anyscale import AnyscaleJobTrigger, AnyscaleServiceTrigger
 
 logging.basicConfig(level=logging.DEBUG)
 
