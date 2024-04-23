@@ -113,11 +113,11 @@ class SubmitAnyscaleJob(BaseOperator):
 
         self.production_job_id = event["job_id"]
 
-        self.log.info("Printing production job logs")
+        """self.log.info("Printing production job logs")
         logs = self.hook.fetch_production_job_logs(self.production_job_id)
         if len(logs)>0:
             for line in logs.split("\n"):
-                self.log.info(line)
+                self.log.info(line)"""
         
         if event["status"] in ("OUT_OF_RETRIES", "TERMINATED", "ERRORED"):
             self.log.info(f"Anyscale job {self.production_job_id} ended with status: {event['status']}")
