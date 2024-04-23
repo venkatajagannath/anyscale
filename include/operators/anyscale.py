@@ -153,9 +153,9 @@ class RolloutAnyscaleService(BaseOperator):
         return AnyscaleHook(conn_id=self.conn_id).conn
     
     def execute(self, context):
-        if not self.auth_token:
-            self.log.info("Auth token is not available...")
-            raise AirflowException("Auth token is not available")
+        if not self.hook:
+            self.log.info(f"SDK is not available...")
+            raise AirflowException("SDK is not available")
 
         # Dynamically create ApplyServiceModel instance from provided parameters
         service_model = ApplyServiceModel(**self.service_params)
