@@ -1,4 +1,5 @@
 from airflow.triggers.base import BaseTrigger, TriggerEvent
+from providers.anyscale.hooks.anyscale import AnyscaleHook
 import asyncio
 import time
 from datetime import datetime, timedelta
@@ -8,13 +9,13 @@ import logging
 
 class AnyscaleJobTrigger(BaseTrigger):
     def __init__(self,
-                 auth_token: str,
+                 conn_id: str,
                  job_id: str,
                  job_start_time: datetime,
                  poll_interval: int = 60,
                  timeout: int = 600):  # Default timeout after an hour
         super().__init__()
-        self.auth_token = auth_token
+        self.conn_id = conn_id
         self.job_id = job_id
         self.job_start_time = job_start_time
         self.poll_interval = poll_interval
@@ -22,15 +23,16 @@ class AnyscaleJobTrigger(BaseTrigger):
 
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(logging.INFO)
-
+    
     @cached_property
-    def sdk(self) -> AnyscaleSDK:
-        return AnyscaleSDK(auth_token=self.auth_token)
+    def hook(self) -> AnyscaleHook:
+        """Return an instance of the AnyscaleHook."""
+        return AnyscaleHook(conn_id=self.conn_id).conn
 
     def serialize(self):
         return ("providers.anyscale.triggers.anyscale.AnyscaleJobTrigger", 
                 {
-                    "auth_token": self.auth_token,
+                    "conn_id": self.conn_id,
                     "job_id": self.job_id,
                     "job_start_time": self.job_start_time.isoformat(),
                     "poll_interval": self.poll_interval
@@ -68,7 +70,7 @@ class AnyscaleJobTrigger(BaseTrigger):
             yield TriggerEvent({"status": "error", "message": str(e), "job_id": self.job_id})
 
     def get_current_status(self, job_id: str):
-        return self.sdk.get_production_job(production_job_id=job_id).result.state.current_state
+        return self.hook.get_production_job(production_job_id=job_id).result.state.current_state
         
     def check_current_status(self, job_id: str) -> bool:
         job_status = self.get_current_status(job_id)

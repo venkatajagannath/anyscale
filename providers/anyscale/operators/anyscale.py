@@ -25,7 +25,7 @@ logging.basicConfig(level=logging.DEBUG)
 class SubmitAnyscaleJob(BaseOperator):
     
     def __init__(self,
-                 auth_token: str,
+                 conn_id : str,
                  job_name: str,
                  build_id: str,
                  entrypoint: str,
@@ -35,7 +35,7 @@ class SubmitAnyscaleJob(BaseOperator):
                  max_retries: int = None,
                  *args, **kwargs):
         super(SubmitAnyscaleJob, self).__init__(*args, **kwargs)
-        self.auth_token = auth_token
+        self.conn_id = conn_id
         self.job_name = job_name
         self.build_id = build_id
         self.runtime_env = runtime_env
@@ -49,10 +49,6 @@ class SubmitAnyscaleJob(BaseOperator):
             raise AirflowException("Entrypoint is required.")
         if not self.job_name:
             raise AirflowException("Cluster env is required.")
-
-    @cached_property
-    def sdk(self) -> AnyscaleSDK:
-        return AnyscaleSDK(auth_token=self.auth_token)
     
     def on_kill(self):
         if self.job_id is not None:
@@ -60,11 +56,16 @@ class SubmitAnyscaleJob(BaseOperator):
             self.log.info(f"Termination request received. Submitted request to terminate the anyscale job")
         return
     
+    @cached_property
+    def hook(self) -> AnyscaleHook:
+        """Return an instance of the AnyscaleHook."""
+        return AnyscaleHook(conn_id=self.conn_id).conn
+
     def execute(self, context: Context):
         
-        if not self.auth_token:
-            self.log.info(f"Auth token is not available...")
-            raise AirflowException("Auth token is not available")
+        if not self.hook:
+            self.log.info(f"SDK is not available...")
+            raise AirflowException("SDK is not available")
         
         job_config = CreateProductionJobConfig(entrypoint = self.entrypoint,
                                                runtime_env = self.runtime_env,
@@ -74,7 +75,7 @@ class SubmitAnyscaleJob(BaseOperator):
                                                max_retries = self.max_retries)
 
         # Submit the job to Anyscale
-        prod_job : ProductionjobResponse = self.sdk.create_job(CreateProductionJob(
+        prod_job : ProductionjobResponse = self.hook.create_job(CreateProductionJob(
                                     name=self.job_name,
                                     config=job_config))
         self.log.info(f"Submitted Anyscale job with ID: {prod_job.result.id}")
@@ -86,7 +87,7 @@ class SubmitAnyscaleJob(BaseOperator):
         if current_status in ("RUNNING","AWAITING_CLUSTER_START","PENDING","RESTARTING","UPDATING"):
             
             self.log.info(f"Deferring the polling to AnyscaleJobTrigger...")
-            self.defer(trigger=AnyscaleJobTrigger(auth_token = self.auth_token,
+            self.defer(trigger=AnyscaleJobTrigger(conn_id = self.conn_id,
                                                   job_id = prod_job.result.id,
                                                   job_start_time = prod_job.result.created_at,
                                                   poll_interval = 60),
@@ -105,7 +106,7 @@ class SubmitAnyscaleJob(BaseOperator):
         return prod_job.result.id
     
     def get_current_status(self,job_id: str) -> str:
-        return self.sdk.get_production_job(
+        return self.hook.get_production_job(
                 production_job_id=job_id).result.state.current_state
 
     def execute_complete(self, context: Context, event: TriggerEvent) -> None:

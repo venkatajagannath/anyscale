@@ -22,10 +22,10 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
-# Define the AWS connection
+# Define the Anyscale connection
 conn = Connection(
-    conn_id="aws_conn",
-    conn_type="aws",
+    conn_id="anyscale_conn",
+    conn_type="anyscale",
     extra={
         "config_kwargs": {
             "signature_version": "unsigned",
@@ -67,7 +67,7 @@ upload_file_to_s3 = LocalFilesystemToS3Operator(
 
 submit_anyscale_job = SubmitAnyscaleJob(
     task_id='submit_anyscale_job',
-    auth_token = 'aph0_CkgwRgIhAMTnvzfldx9Y2O6ZButQxNnhabK9l29-tuniLuqx06w9AiEAkpipIq2s8nuS9H16vkRf5I0ZkdjSBsiPAoED24xLzM8SYxIgpnF-XZEDsT-vB9CmhIaffdz3f9FlQE1MNjuUfnPc5D8YASIedXNyX3V3Y2N3a2Z1ODN6ZXdhNXFjN2ZwYXVpYzVwOgwI6_C1kBIQqIzOngJCDAi_stWwBhCojM6eAvIBAA',
+    conn_id = conn,
     job_name = 'AstroJob',
     build_id = 'anyscaleray2100-py39',
     entrypoint = 'python script.py',
