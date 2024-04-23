@@ -124,14 +124,14 @@ class SubmitAnyscaleJob(BaseOperator):
 class RolloutAnyscaleService(BaseOperator):
 
     def __init__(self,
-                auth_token: str,
+                conn_id: str,
                 name: str,
                 ray_serve_config: object,
                 build_id: str,
                 compute_config_id: str,
                  **kwargs):
         super(RolloutAnyscaleService, self).__init__(**kwargs)
-        self.auth_token = auth_token
+        self.conn_id = conn_id
 
         # Set up explicit parameters
         self.service_params = {
@@ -148,8 +148,9 @@ class RolloutAnyscaleService(BaseOperator):
         self.service_params.update(kwargs)
 
     @cached_property
-    def sdk(self) -> 'AnyscaleSDK':  # Assuming AnyscaleSDK is defined somewhere
-        return AnyscaleSDK(auth_token=self.auth_token)
+    def hook(self) -> AnyscaleHook:
+        """Return an instance of the AnyscaleHook."""
+        return AnyscaleHook(conn_id=self.conn_id).conn
     
     def execute(self, context):
         if not self.auth_token:
@@ -160,9 +161,9 @@ class RolloutAnyscaleService(BaseOperator):
         service_model = ApplyServiceModel(**self.service_params)
         
         # Call the SDK method with the dynamically created service model
-        service_response = self.sdk.rollout_service(apply_service_model=service_model)
+        service_response = self.hook.rollout_service(apply_service_model=service_model)
 
-        self.defer(trigger=AnyscaleServiceTrigger(auth_token = self.auth_token,
+        self.defer(trigger=AnyscaleServiceTrigger(conn_id = self.conn_id,
                                         service_id = service_response.result.id,
                                         expected_state = service_response.result.goal_state,
                                         poll_interval= 60,

@@ -22,21 +22,8 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
-# Define the AWS connection
-conn = Connection(
-    conn_id="aws_conn",
-    conn_type="aws",
-    extra={
-        "config_kwargs": {
-            "signature_version": "unsigned",
-        },
-    },
-)
-
-# Constants
-BUCKET_NAME = 'anyscale-production-data-cld-g7m5cn8nnhkydikcjc6lj4ekye'
-FILE_PATH = '/usr/local/airflow/dags/ray_scripts/script.py'
-AWS_CONN_ID = 'aws_conn'
+# Define the Anyscale connection
+ANYSCALE_CONN_ID = "anyscale_conn"
 
 dag = DAG(
     'anyscale_service_workflow',
@@ -46,27 +33,9 @@ dag = DAG(
     catchup=False,
 )
 
-"""runtime_env = RayRuntimeEnvConfig(working_dir=FILE_PATH,
-                                  upload_path = "s3://"+BUCKET_NAME,
-                                  pip=["requests","pandas","numpy","torch"])
-
-# Extract the filename from the file path for S3 key construction
-filename = os.path.basename(FILE_PATH)
-s3_key = f'scripts/{filename}'
-
-upload_file_to_s3 = LocalFilesystemToS3Operator(
-    task_id='upload_file_to_s3',
-    filename=FILE_PATH,
-    dest_key=s3_key,
-    dest_bucket=BUCKET_NAME,
-    aws_conn_id=AWS_CONN_ID,
-    replace=True,
-    dag=dag
-)"""
-
 deploy_anyscale_service = RolloutAnyscaleService(
     task_id="rollout_anyscale_service",
-    auth_token="aph0_CkgwRgIhAMTnvzfldx9Y2O6ZButQxNnhabK9l29-tuniLuqx06w9AiEAkpipIq2s8nuS9H16vkRf5I0ZkdjSBsiPAoED24xLzM8SYxIgpnF-XZEDsT-vB9CmhIaffdz3f9FlQE1MNjuUfnPc5D8YASIedXNyX3V3Y2N3a2Z1ODN6ZXdhNXFjN2ZwYXVpYzVwOgwI6_C1kBIQqIzOngJCDAi_stWwBhCojM6eAvIBAA",
+    conn_id = ANYSCALE_CONN_ID,
     name="AstroService",
     build_id="bld_7qsgb3mnjp7juibl6jetl9lhbu",
     compute_config_id="cpt_8kfdcvmckjnjqd1xwnctmpldl4",

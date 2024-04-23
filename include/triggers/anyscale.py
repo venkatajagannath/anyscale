@@ -80,13 +80,13 @@ class AnyscaleJobTrigger(BaseTrigger):
 
 class AnyscaleServiceTrigger(BaseTrigger):
     def __init__(self,
-                 auth_token: str,
+                 conn_id: str,
                  service_id: str,
                  expected_state: str,
                  poll_interval: int = 60,
                  timeout: int = 600):
         super().__init__()
-        self.auth_token = auth_token
+        self.conn_id = conn_id
         self.service_id = service_id
         self.expected_state = expected_state
         self.poll_interval = poll_interval
@@ -97,11 +97,12 @@ class AnyscaleServiceTrigger(BaseTrigger):
         self.end_time = time.time() + timeout
 
     @cached_property
-    def sdk(self) -> AnyscaleSDK:
-        return AnyscaleSDK(auth_token=self.auth_token)
+    def hook(self) -> AnyscaleHook:
+        """Return an instance of the AnyscaleHook."""
+        return AnyscaleHook(conn_id=self.conn_id).conn
 
     def serialize(self):
-        return ("providers.anyscale.triggers.anyscale.AnyscaleServiceTrigger", {
+        return ("include.triggers.anyscale.AnyscaleServiceTrigger", {
             "auth_token": self.auth_token,
             "service_id": self.service_id,
             "expected_state": self.expected_state,
@@ -149,7 +150,7 @@ class AnyscaleServiceTrigger(BaseTrigger):
             yield TriggerEvent({"status": "error", "message": str(e),"service_id": self.service_id})
     
     def get_current_status(self, service_id: str):
-        return self.sdk.get_service(service_id).result.current_state
+        return self.hook.get_service(service_id).result.current_state
         
     def check_current_status(self, service_id: str) -> bool:
         job_status = self.get_current_status(service_id)
