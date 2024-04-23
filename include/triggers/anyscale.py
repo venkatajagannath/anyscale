@@ -53,11 +53,13 @@ class AnyscaleJobTrigger(BaseTrigger):
             # Once out of the loop, the job has reached a terminal status
             job_status = self.get_current_status(self.job_id)
             self.logger.info(f"Current status of the job is {job_status}")
+            
             self.log.info("Printing production job logs")
             logs = self.hook.fetch_production_job_logs(self.production_job_id)
             if len(logs)>0:
                 for line in logs.split("\n"):
                     self.log.info(line)
+            
             yield TriggerEvent({
                 "status": job_status,
                 "message": f"Job {self.job_id} completed with status {job_status}.",
