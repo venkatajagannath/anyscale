@@ -1,12 +1,14 @@
+# Standard library imports
+import logging
+from typing import TYPE_CHECKING, Any, Literal
+
+# Third-party imports
+from anyscale import AnyscaleSDK
+
+# Airflow imports
 from airflow.hooks.base_hook import BaseHook
 from airflow.exceptions import AirflowException
 from airflow.compat.functools import cached_property
-
-import logging
-from functools import cached_property
-from typing import TYPE_CHECKING, Any, Literal
-
-from anyscale import AnyscaleSDK
 
 logger = logging.getLogger(__name__)
 
@@ -18,11 +20,12 @@ class AnyscaleHook(BaseHook):
     conn_name_attr = "conn_id"
     default_conn_name = "anyscale_default"
     conn_type = "anyscale"
-    hook_name = "AnyscaleHook"
+    hook_name = "Anyscale"
 
     def __init__(self, conn_id: str = default_conn_name, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.conn_id = conn_id
+        self.kwargs = kwargs
         logger.info(f"Initializing AnyscaleHook with connection_id: {conn_id}")
 
     @classmethod
@@ -37,13 +40,6 @@ class AnyscaleHook(BaseHook):
     @cached_property
     def conn(self) -> AnyscaleSDK:
         """Return an Anyscale connection object."""
-        return self.sdk()
-
-    @cached_property
-    def sdk(self, **kwargs):
-        """
-        Authenticate to Anyscale using the connection details stored in Airflow's connection and initializes the SDK.
-        """
         conn = self.get_connection(self.conn_id)
         token = conn.password
         if not token:
@@ -51,7 +47,7 @@ class AnyscaleHook(BaseHook):
 
         extras = conn.extra_dejson
         # Merge any extra kwargs from the connection and any additional ones passed at runtime
-        sdk_params = {**extras, **kwargs}
+        sdk_params = {**extras, **self.kwargs}
         
         try:
             return AnyscaleSDK(token=token, **sdk_params)

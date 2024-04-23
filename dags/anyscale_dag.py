@@ -23,15 +23,7 @@ default_args = {
 }
 
 # Define the Anyscale connection
-conn = Connection(
-    conn_id="anyscale_conn",
-    conn_type="anyscale",
-    extra={
-        "config_kwargs": {
-            "signature_version": "unsigned",
-        },
-    },
-)
+ANYSCALE_CONN_ID = "anyscale_conn"
 
 # Constants
 BUCKET_NAME = 'anyscale-production-data-cld-g7m5cn8nnhkydikcjc6lj4ekye'
@@ -67,7 +59,7 @@ upload_file_to_s3 = LocalFilesystemToS3Operator(
 
 submit_anyscale_job = SubmitAnyscaleJob(
     task_id='submit_anyscale_job',
-    conn_id = conn,
+    conn_id = ANYSCALE_CONN_ID,
     job_name = 'AstroJob',
     build_id = 'anyscaleray2100-py39',
     entrypoint = 'python script.py',
