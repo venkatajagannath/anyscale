@@ -174,6 +174,15 @@ class RolloutAnyscaleService(BaseOperator):
     
     def execute_complete(self, context: Context, event: TriggerEvent) -> None:
         self.log.info(f"Execution completed...")
-        return
+
+        self.service_id = event["service_id"]
+        
+        if event["status"] == 'failed':
+            self.log.info(f"Anyscale service deployment {self.service_id} ended with status : {event['status']}")
+        else:
+            # This method gets called when the trigger fires that the job is complete
+            self.log.info(f"Anyscale service deployment {self.service_id} completed with status: {event['status']}")
+
+        return None
     
 
