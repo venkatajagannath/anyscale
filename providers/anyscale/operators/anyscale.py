@@ -163,7 +163,7 @@ class RolloutAnyscaleService(BaseOperator):
 
         self.defer(trigger=AnyscaleServiceTrigger(auth_token = self.auth_token,
                                         service_id = service_response.result.id,
-                                        expected_state = service_response.result.goal_state.RUNNING,
+                                        expected_state = service_response.result.goal_state,
                                         poll_interval= 60,
                                         timeout= 600),
             method_name="execute_complete")
