@@ -118,7 +118,7 @@ class AnyscaleServiceTrigger(BaseTrigger):
 
         try:
             self.logger.info(f"Monitoring service {self.service_id} every {self.poll_interval} seconds to reach {self.expected_state}")
-            if self.get_current_status(self.service_id) == self.expected_state:
+            if self.get_current_status(self.service_id) == 'RUNNING':
                 yield TriggerEvent({"status": "success",
                                         "message":"Service deployment succeeded",
                                         "service_id": self.service_id})
@@ -136,7 +136,7 @@ class AnyscaleServiceTrigger(BaseTrigger):
                 current_state = self.get_current_status(self.service_id)
                 self.logger.info(f"Current state of service {self.service_id}: {current_state}")
 
-                if current_state == self.expected_state:
+                if current_state == 'RUNNING':
                     yield TriggerEvent({"status": "success",
                                         "message":"Service deployment succeeded",
                                         "service_id": self.service_id})

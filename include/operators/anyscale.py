@@ -166,7 +166,7 @@ class RolloutAnyscaleService(BaseOperator):
 
         self.defer(trigger=AnyscaleServiceTrigger(conn_id = self.conn_id,
                                         service_id = service_response.result.id,
-                                        expected_state = service_response.result.goal_state,
+                                        expected_state = 'RUNNING',
                                         poll_interval= 60,
                                         timeout= 600),
             method_name="execute_complete")
