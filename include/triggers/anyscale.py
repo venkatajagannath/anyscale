@@ -41,7 +41,7 @@ class AnyscaleJobTrigger(BaseTrigger):
             self.logger.info("No job_id provided")
             yield TriggerEvent({"status": "error", "message": "No job_id provided to async trigger", "job_id": self.job_id})
         try:
-            while self.is_terminal_status(self.job_id):
+            while not self.is_terminal_status(self.job_id):
                 if time.time() > self.end_time:
                     yield TriggerEvent({
                         "status": "timeout",
