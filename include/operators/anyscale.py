@@ -114,7 +114,7 @@ class SubmitAnyscaleJob(BaseOperator):
         self.production_job_id = event["job_id"]
 
         self.log.info("Printing production job logs")
-        logs = self.hook.get_production_job_logs(self.production_job_id)
+        logs = self.hook.fetch_production_job_logs(self.production_job_id)
         if len(logs)>0:
             for line in logs.split("\n"):
                 self.log.info(line)
