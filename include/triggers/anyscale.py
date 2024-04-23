@@ -1,5 +1,5 @@
 from airflow.triggers.base import BaseTrigger, TriggerEvent
-from providers.anyscale.hooks.anyscale import AnyscaleHook
+from include.hooks.anyscale import AnyscaleHook
 import asyncio
 import time
 from datetime import datetime, timedelta

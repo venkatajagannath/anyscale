@@ -50,7 +50,7 @@ class AnyscaleHook(BaseHook):
         sdk_params = {**extras, **self.kwargs}
         
         try:
-            return AnyscaleSDK(token=token, **sdk_params)
+            return AnyscaleSDK(auth_token=token, **sdk_params)
         except Exception as e:
             logger.error(f"Unable to authenticate with Anyscale cloud. Error: {e}")
             raise AirflowException(f"Unable to authenticate with Anyscale cloud. Error: {e}")
