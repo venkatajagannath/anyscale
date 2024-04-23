@@ -103,7 +103,7 @@ class AnyscaleServiceTrigger(BaseTrigger):
 
     def serialize(self):
         return ("include.triggers.anyscale.AnyscaleServiceTrigger", {
-            "auth_token": self.auth_token,
+            "conn_id": self.conn_id,
             "service_id": self.service_id,
             "expected_state": self.expected_state,
             "poll_interval": self.poll_interval,
