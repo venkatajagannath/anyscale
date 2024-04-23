@@ -43,18 +43,18 @@ class SubmitAnyscaleJob(BaseOperator):
         self.compute_config_id = compute_config_id
         self.compute_config = compute_config
         self.max_retries = max_retries
+        self.job_config_kwargs = kwargs
         self.job_id = None
 
         if not self.entrypoint:
             raise AirflowException("Entrypoint is required.")
         if not self.job_name:
-            raise AirflowException("Cluster env is required.")
+            raise AirflowException("Job name is required.")
     
     def on_kill(self):
         if self.job_id is not None:
-            job_obj = self.sdk.terminate_job(self.job_id)
-            self.log.info(f"Termination request received. Submitted request to terminate the anyscale job")
-        return
+            self.sdk.terminate_job(self.job_id)
+            self.log.info("Termination request received. Submitted request to terminate the anyscale job.")
     
     @cached_property
     def hook(self) -> AnyscaleHook:
@@ -64,62 +64,65 @@ class SubmitAnyscaleJob(BaseOperator):
     def execute(self, context: Context):
         
         if not self.hook:
-            self.log.info(f"SDK is not available...")
-            raise AirflowException("SDK is not available")
+            self.log.info("SDK is not available.")
+            raise AirflowException("SDK is not available.")
         
-        job_config = CreateProductionJobConfig(entrypoint = self.entrypoint,
-                                               runtime_env = self.runtime_env,
-                                               build_id = self.build_id,
-                                               compute_config_id = self.compute_config_id,
-                                               compute_config = self.compute_config,
-                                               max_retries = self.max_retries)
+        job_config = CreateProductionJobConfig(entrypoint=self.entrypoint,
+                                               runtime_env=self.runtime_env,
+                                               build_id=self.build_id,
+                                               compute_config_id=self.compute_config_id,
+                                               compute_config=self.compute_config,
+                                               max_retries=self.max_retries)
 
         # Submit the job to Anyscale
-        prod_job : ProductionjobResponse = self.hook.create_job(CreateProductionJob(
-                                    name=self.job_name,
-                                    config=job_config))
+        prod_job = self.hook.create_job(CreateProductionJob(name=self.job_name, config=job_config))
         self.log.info(f"Submitted Anyscale job with ID: {prod_job.result.id}")
 
-        current_status = self.get_current_status(prod_job.result.id)
         self.job_id = prod_job.result.id
-        self.log.info(f"Current status for {prod_job.result.id} is: {current_status}")
+        current_status = self.get_current_status(self.job_id)
+        self.log.info(f"Current status for {self.job_id} is: {current_status}")
 
-        if current_status in ("RUNNING","AWAITING_CLUSTER_START","PENDING","RESTARTING","UPDATING"):
-            
-            self.log.info(f"Deferring the polling to AnyscaleJobTrigger...")
-            self.defer(trigger=AnyscaleJobTrigger(conn_id = self.conn_id,
-                                                  job_id = prod_job.result.id,
-                                                  job_start_time = prod_job.result.created_at,
-                                                  poll_interval = 60),
-                        method_name="execute_complete")
-            
-        elif current_status == "SUCCESS":
-            self.log.info(f"Job {prod_job.result.id} completed successfully")
-            return
-        elif current_status in ("ERRORED","BROKEN","OUT_OF_RETRIES"):
-            raise AirflowException(f"Job {prod_job.result.id} failed")
-        elif current_status == "TERMINATED":
-            raise AirflowException(f"Job {prod_job.result.id} was cancelled")
-        else:
-            raise Exception(f"Encountered unexpected state `{current_status}` for job_id `{prod_job.result.id}")
+        self.process_job_status(prod_job, current_status)
         
-        return prod_job.result.id
+        return self.job_id
     
-    def get_current_status(self,job_id: str) -> str:
-        return self.hook.get_production_job(
-                production_job_id=job_id).result.state.current_state
+    def process_job_status(self, prod_job, current_status):
+        if current_status in ("RUNNING", "AWAITING_CLUSTER_START", "PENDING", "RESTARTING", "UPDATING"):
+            self.defer_job_polling(prod_job)
+        elif current_status == "SUCCESS":
+            self.log.info(f"Job {self.job_id} completed successfully.")
+        elif current_status in ("ERRORED", "BROKEN", "OUT_OF_RETRIES"):
+            raise AirflowException(f"Job {self.job_id} failed.")
+        elif current_status == "TERMINATED":
+            raise AirflowException(f"Job {self.job_id} was cancelled.")
+        else:
+            raise Exception(f"Unexpected state `{current_status}` for job_id `{self.job_id}`.")
+    
+    def defer_job_polling(self, prod_job):
+        self.log.info("Deferring the polling to AnyscaleJobTrigger...")
+        self.defer(trigger=AnyscaleJobTrigger(conn_id=self.conn_id,
+                                              job_id=prod_job.result.id,
+                                              job_start_time=prod_job.result.created_at,
+                                              poll_interval=60),
+                   method_name="execute_complete")
+
+    def get_current_status(self, job_id):
+        return self.hook.get_production_job(production_job_id=job_id).result.state.current_state
 
     def execute_complete(self, context: Context, event: TriggerEvent) -> None:
 
         self.production_job_id = event["job_id"]
+
+        self.log.info("Printing production job logs")
+        logs = self.hook.get_production_job_logs(self.production_job_id).split("\n")
+        for line in logs:
+            self.log.info(line)
         
         if event["status"] in ("OUT_OF_RETRIES", "TERMINATED", "ERRORED"):
-            self.log.info(f"Anyscale job {self.production_job_id} ended with status : {event['status']}")
+            self.log.info(f"Anyscale job {self.production_job_id} ended with status: {event['status']}")
             raise AirflowException(f"Job {self.production_job_id} failed with error {event['message']}")
         else:
-            # This method gets called when the trigger fires that the job is complete
             self.log.info(f"Anyscale job {self.production_job_id} completed with status: {event['status']}")
-
         return None
 
 class RolloutAnyscaleService(BaseOperator):

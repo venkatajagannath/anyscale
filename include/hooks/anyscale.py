@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 # Third-party imports
 from anyscale import AnyscaleSDK
+from anyscale.sdk.anyscale_client.models import *
 
 # Airflow imports
 from airflow.hooks.base_hook import BaseHook
