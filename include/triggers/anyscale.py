@@ -71,7 +71,7 @@ class AnyscaleJobTrigger(BaseTrigger):
     def is_terminal_status(self, job_id):
         job_status = self.get_current_status(job_id)
         self.logger.info(f"Current job status for {job_id} is: {job_status}")
-        return job_status not in ('RUNNING', 'PENDING', 'AWAITING_CLUSTER_START', 'RESTARTING')
+        return job_status in ('RUNNING', 'PENDING', 'AWAITING_CLUSTER_START', 'RESTARTING')
 
 
 
