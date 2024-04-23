@@ -132,7 +132,7 @@ class AnyscaleServiceTrigger(BaseTrigger):
                                         "message":"Service deployment succeeded",
                                         "service_id": self.service_id})
                     return
-                elif self.expected_state != current_state:
+                elif self.expected_state != current_state and not self.check_current_status(self.service_id):
                     yield TriggerEvent({
                         "status": "failed",
                         "message": f"Service {self.service_id} entered an unexpected state: {current_state}",
