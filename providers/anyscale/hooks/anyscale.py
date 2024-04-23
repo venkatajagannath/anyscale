@@ -34,7 +34,9 @@ class AnyscaleHook(BaseHook):
         return {
             "hidden_fields": ["schema", "port", "login"],
             "relabeling": {"password": "API Key"},
-            "placeholders": {},
+            "placeholders": {
+                "password": "API key from Anyscale UI",
+            },
         }
     
     @classmethod
