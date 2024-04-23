@@ -37,6 +37,17 @@ class AnyscaleHook(BaseHook):
             "placeholders": {},
         }
     
+    @classmethod
+    def get_connection_form_widgets(cls) -> dict[str, Any]:
+        """Return connection widgets to add to connection form."""
+        from flask_appbuilder.fieldwidgets import BS3TextFieldWidget
+        from flask_babel import lazy_gettext
+        from wtforms import StringField
+
+        return {
+            "api_key": StringField(lazy_gettext("API Key"), widget=BS3TextFieldWidget()),
+        }
+    
     @cached_property
     def conn(self) -> AnyscaleSDK:
         """Return an Anyscale connection object."""
