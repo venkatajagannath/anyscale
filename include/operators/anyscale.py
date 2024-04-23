@@ -115,6 +115,7 @@ class SubmitAnyscaleJob(BaseOperator):
         
         if event["status"] in ("OUT_OF_RETRIES", "TERMINATED", "ERRORED"):
             self.log.info(f"Anyscale job {self.production_job_id} ended with status : {event['status']}")
+            raise AirflowException(f"Job {self.production_job_id} failed with error {event['message']}")
         else:
             # This method gets called when the trigger fires that the job is complete
             self.log.info(f"Anyscale job {self.production_job_id} completed with status: {event['status']}")
@@ -181,6 +182,7 @@ class RolloutAnyscaleService(BaseOperator):
         
         if event["status"] == 'failed':
             self.log.info(f"Anyscale service deployment {self.service_id} ended with status : {event['status']}")
+            raise AirflowException(f"Job {self.service_id} failed with error {event['message']}")
         else:
             # This method gets called when the trigger fires that the job is complete
             self.log.info(f"Anyscale service deployment {self.service_id} completed with status: {event['status']}")
