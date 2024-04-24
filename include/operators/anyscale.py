@@ -149,7 +149,7 @@ class RolloutAnyscaleService(BaseOperator):
     @cached_property
     def hook(self) -> AnyscaleHook:
         """Return an instance of the AnyscaleHook."""
-        return AnyscaleHook(conn_id=self.conn_id).conn
+        return AnyscaleHook(conn_id=self.conn_id)
     
     def execute(self, context):
         if not self.hook:

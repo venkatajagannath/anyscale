@@ -1,12 +1,7 @@
-# Standard library imports
 import logging
-from typing import TYPE_CHECKING, Any, Literal
+from typing import Any, Dict
 
-# Third-party imports
 from anyscale import AnyscaleSDK
-from anyscale.sdk.anyscale_client.models import *
-
-# Airflow imports
 from airflow.hooks.base_hook import BaseHook
 from airflow.exceptions import AirflowException
 from airflow.compat.functools import cached_property
@@ -21,56 +16,61 @@ class AnyscaleHook(BaseHook):
     conn_name_attr = "conn_id"
     default_conn_name = "anyscale_default"
     conn_type = "anyscale"
-    hook_name = "AnyscaleHook"
+    hook_name = "Anyscale"
 
-    def __init__(self, conn_id: str = default_conn_name, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, conn_id: str = default_conn_name, **kwargs: Any) -> None:
+        super().__init__()
         self.conn_id = conn_id
         self.sdk = None
-        self.kwargs = kwargs
-        logger.info(f"Initializing AnyscaleHook with connection_id: {conn_id}")
+        self.sdk_params = kwargs
+        logger.info(f"Initializing AnyscaleHook with connection_id: {self.conn_id}")
 
     @classmethod
-    def get_ui_field_behaviour(cls) -> dict[str, Any]:
-        """Return custom field behaviour."""
+    def get_ui_field_behaviour(cls) -> Dict[str, Any]:
+        """Return custom field behaviour for the connection form in the UI."""
         return {
             "hidden_fields": ["schema", "port", "login"],
             "relabeling": {"password": "API Key"},
-            "placeholders": {},
+            "placeholders": {"password": "Enter API Key here"},
         }
-    
+
     @cached_property
     def conn(self) -> AnyscaleSDK:
-        """Return an Anyscale connection object."""
+        """Lazy load the Anyscale connection object and authenticate."""
         conn = self.get_connection(self.conn_id)
         token = conn.password
         if not token:
-            raise AirflowException(f"Missing token for connection id {self.conn_id}")
-
+            raise AirflowException(f"Missing API token for connection id {self.conn_id}")
         extras = conn.extra_dejson
-        # Merge any extra kwargs from the connection and any additional ones passed at runtime
-        sdk_params = {**extras, **self.kwargs}
-        
+
         try:
-            return AnyscaleSDK(auth_token=token, **sdk_params)
+            return AnyscaleSDK(auth_token=token, **{**extras, **self.sdk_params})
         except Exception as e:
-            logger.error(f"Unable to authenticate with Anyscale cloud. Error: {e}")
-            raise AirflowException(f"Unable to authenticate with Anyscale cloud. Error: {e}")
-    
-    def create_job(self, config: CreateProductionJob) -> str:
+            message = f"Unable to authenticate with Anyscale cloud: {e}"
+            logger.error(message, exc_info=True)
+            raise AirflowException(message)
 
-        if self.sdk is None:
+    def get_sdk(self) -> AnyscaleSDK:
+        """Return a connected Anyscale SDK instance."""
+        if not self.sdk:
             self.sdk = self.conn
-        
-        prod_job = self.sdk.create_job(config)
+        return self.sdk
 
+    def create_job(self, config: dict) -> str:
+        """Create a production job on Anyscale."""
+        sdk = self.get_sdk()
+        prod_job = sdk.create_job(config)
         return prod_job
-        
+
     def get_production_job_status(self, job_id: str) -> str:
-        
-        if self.sdk is None:
-            self.sdk = self.conn
-        
-        return self.sdk.get_production_job(production_job_id=job_id).result.state.current_state
-
-
+        """Retrieve the status of a production job."""
+        sdk = self.get_sdk()
+        return sdk.get_production_job(production_job_id=job_id).result.state.current_state
+    
+    def rollout_service(self,apply_service_model: ApplyServiceModel) -> str:
+        sdk = self.get_sdk()
+        return sdk.rollout_service(apply_service_model=apply_service_model)
+    
+    def get_service_status(self,service_id: str) -> str:
+        sdk = self.get_sdk()
+        return sdk.get_service(service_id).result.current_state

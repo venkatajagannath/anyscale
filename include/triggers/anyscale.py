@@ -104,7 +104,7 @@ class AnyscaleServiceTrigger(BaseTrigger):
     @cached_property
     def hook(self) -> AnyscaleHook:
         """Return an instance of the AnyscaleHook."""
-        return AnyscaleHook(conn_id=self.conn_id).conn
+        return AnyscaleHook(conn_id=self.conn_id)
 
     def serialize(self):
         return ("include.triggers.anyscale.AnyscaleServiceTrigger", {
@@ -161,7 +161,7 @@ class AnyscaleServiceTrigger(BaseTrigger):
             yield TriggerEvent({"status": "error", "message": str(e),"service_id": self.service_id})
     
     def get_current_status(self, service_id: str):
-        return self.hook.get_service(service_id).result.current_state
+        return self.hook.get_service_status(service_id).result.current_state
         
     def check_current_status(self, service_id: str) -> bool:
         job_status = self.get_current_status(service_id)
