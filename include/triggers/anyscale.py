@@ -139,8 +139,7 @@ class AnyscaleServiceTrigger(BaseTrigger):
                     return
 
                 current_state = self.get_current_status(self.service_id)
-                self.logger.info(f"Current state of service {self.service_id}: {current_state}")
-
+                
                 if current_state == 'RUNNING':
                     yield TriggerEvent({"status": "success",
                                         "message":"Service deployment succeeded",
