@@ -74,7 +74,7 @@ class AnyscaleJobTrigger(BaseTrigger):
             })
 
     def get_current_status(self, job_id):
-        return self.hook.get_production_job_status(production_job_id=job_id)
+        return self.hook.get_production_job_status(job_id=job_id)
 
     def is_terminal_status(self, job_id):
         job_status = self.get_current_status(job_id)
