@@ -107,7 +107,7 @@ class SubmitAnyscaleJob(BaseOperator):
                    method_name="execute_complete")
 
     def get_current_status(self, job_id):
-        return self.hook.get_production_job_status(production_job_id=job_id)
+        return self.hook.get_production_job_status(job_id=job_id)
 
     def execute_complete(self, context: Context, event: TriggerEvent) -> None:
 
