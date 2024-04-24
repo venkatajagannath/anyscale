@@ -161,7 +161,7 @@ class AnyscaleServiceTrigger(BaseTrigger):
             yield TriggerEvent({"status": "error", "message": str(e),"service_id": self.service_id})
     
     def get_current_status(self, service_id: str):
-        return self.hook.get_service_status(service_id).result.current_state
+        return self.hook.get_service_status(service_id)
         
     def check_current_status(self, service_id: str) -> bool:
         job_status = self.get_current_status(service_id)
