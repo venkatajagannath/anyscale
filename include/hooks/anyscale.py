@@ -5,6 +5,7 @@ from anyscale import AnyscaleSDK
 from airflow.hooks.base_hook import BaseHook
 from airflow.exceptions import AirflowException
 from airflow.compat.functools import cached_property
+from anyscale.sdk.anyscale_client.models import *
 
 logger = logging.getLogger(__name__)
 
