@@ -62,6 +62,15 @@ class AnyscaleHook(BaseHook):
         sdk = self.get_sdk()
         prod_job = sdk.create_job(config)
         return prod_job
+    
+    def fetch_production_job_logs(self, job_id: str):
+        logs_list = []
+        sdk = self.get_sdk()
+        logs = sdk.fetch_production_job_logs(job_id)
+        if len(logs)>0:
+            for line in logs.split("\n"):
+                logs_list.append(line)
+        return logs_list
 
     def get_production_job_status(self, job_id: str) -> str:
         """Retrieve the status of a production job."""
