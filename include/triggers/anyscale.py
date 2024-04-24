@@ -84,25 +84,19 @@ class AnyscaleJobTrigger(BaseTrigger):
 
 
 class AnyscaleServiceTrigger(BaseTrigger):
-    def __init__(self,
-                 conn_id: str,
-                 service_id: str,
-                 expected_state: str,
-                 poll_interval: int = 60,
-                 timeout: int = 600):
+    def __init__(self, conn_id: str, service_id: str, expected_state: str, 
+                 poll_interval: int = 60, timeout: int = 3600):  # Default timeout is set to 1 hour
         super().__init__()
         self.conn_id = conn_id
         self.service_id = service_id
         self.expected_state = expected_state
         self.poll_interval = poll_interval
         self.timeout = timeout
-
+        self.end_time = time.time() + self.timeout
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.setLevel(logging.INFO)
-        self.end_time = time.time() + timeout
-
+    
     @cached_property
-    def hook(self) -> AnyscaleHook:
+    def hook(self):
         """Return an instance of the AnyscaleHook."""
         return AnyscaleHook(conn_id=self.conn_id)
 
@@ -116,53 +110,36 @@ class AnyscaleServiceTrigger(BaseTrigger):
         })
 
     async def run(self):
-        
         if not self.service_id:
-            self.logger.info("No service_id provided")
-            yield TriggerEvent({"status": "error", "message": "No service_id provided to async trigger", "service_id": self.service_id})
+            self.logger.error("No service_id provided")
+            yield TriggerEvent({"status": "error", "message": "No service_id provided to async trigger", "service_id": None})
+            return
 
         try:
-            self.logger.info(f"Monitoring service {self.service_id} every {self.poll_interval} seconds to reach {self.expected_state}")
-            if self.get_current_status(self.service_id) == 'RUNNING':
-                yield TriggerEvent({"status": "success",
-                                        "message":"Service deployment succeeded",
-                                        "service_id": self.service_id})
-                return
-
-            while self.check_current_status(self.service_id):
-                if time.time() > self.end_time:
-                    yield TriggerEvent({
-                        "status": "timeout",
-                        "message": f"Service {self.service_id} did not reach {self.expected_state} within the timeout period.",
-                        "service_id": self.service_id
-                    })
-                    return
-
+            while time.time() < self.end_time:
                 current_state = self.get_current_status(self.service_id)
-                
-                if current_state == 'RUNNING':
+                self.logger.info(f"Service {self.service_id} is currently {current_state}")
+
+                if current_state == self.expected_state:
                     yield TriggerEvent({"status": "success",
-                                        "message":"Service deployment succeeded",
+                                        "message": f"Service {self.service_id} reached the expected state: {self.expected_state}",
                                         "service_id": self.service_id})
                     return
-                elif self.expected_state != current_state and not self.check_current_status(self.service_id):
-                    yield TriggerEvent({
-                        "status": "failed",
-                        "message": f"Service {self.service_id} entered an unexpected state: {current_state}",
-                        "service_id": self.service_id
-                    })
+                elif current_state in ['FAILED', 'ERROR']:
+                    yield TriggerEvent({"status": "failed",
+                                        "message": f"Service {self.service_id} failed to deploy.",
+                                        "service_id": self.service_id})
                     return
 
                 await asyncio.sleep(self.poll_interval)
 
+            # If we exit the while loop because of a timeout
+            yield TriggerEvent({"status": "timeout", "message": f"Service {self.service_id} did not reach the expected state within the timeout period.", "service_id": self.service_id})
+
         except Exception as e:
-            self.logger.error("An error occurred during monitoring:", exc_info=True)
-            yield TriggerEvent({"status": "error", "message": str(e),"service_id": self.service_id})
+            self.logger.exception("An error occurred during monitoring.")
+            yield TriggerEvent({"status": "error", "message": str(e), "service_id": self.service_id})
     
-    def get_current_status(self, service_id: str):
+    def get_current_status(self, service_id: str) -> str:
+        """Retrieve the current status of the service from Anyscale."""
         return self.hook.get_service_status(service_id)
-        
-    def check_current_status(self, service_id: str) -> bool:
-        job_status = self.get_current_status(service_id)
-        self.logger.info(f"Current job status for {service_id} is: {job_status}")
-        return job_status in ('STARTING','UPDATING','ROLLING_OUT')
