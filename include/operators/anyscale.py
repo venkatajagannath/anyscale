@@ -59,7 +59,7 @@ class SubmitAnyscaleJob(BaseOperator):
     @cached_property
     def hook(self) -> AnyscaleHook:
         """Return an instance of the AnyscaleHook."""
-        return AnyscaleHook(conn_id=self.conn_id).conn
+        return AnyscaleHook(conn_id=self.conn_id)
 
     def execute(self, context: Context):
         
@@ -107,7 +107,7 @@ class SubmitAnyscaleJob(BaseOperator):
                    method_name="execute_complete")
 
     def get_current_status(self, job_id):
-        return self.hook.get_production_job(production_job_id=job_id).result.state.current_state
+        return self.hook.get_production_job_status(production_job_id=job_id)
 
     def execute_complete(self, context: Context, event: TriggerEvent) -> None:
 

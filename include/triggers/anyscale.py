@@ -25,7 +25,7 @@ class AnyscaleJobTrigger(BaseTrigger):
     @cached_property
     def hook(self) -> AnyscaleHook:
         """Return an instance of the AnyscaleHook."""
-        return AnyscaleHook(conn_id=self.conn_id).conn
+        return AnyscaleHook(conn_id=self.conn_id)
 
     def serialize(self):
         return ("include.triggers.anyscale.AnyscaleJobTrigger", {
@@ -54,11 +54,11 @@ class AnyscaleJobTrigger(BaseTrigger):
             job_status = self.get_current_status(self.job_id)
             self.logger.info(f"Current status of the job is {job_status}")
             
-            self.log.info("Printing production job logs")
+            """self.log.info("Printing production job logs")
             logs = self.hook.fetch_production_job_logs(self.production_job_id)
             if len(logs)>0:
                 for line in logs.split("\n"):
-                    self.log.info(line)
+                    self.log.info(line)"""
             
             yield TriggerEvent({
                 "status": job_status,
@@ -74,7 +74,7 @@ class AnyscaleJobTrigger(BaseTrigger):
             })
 
     def get_current_status(self, job_id):
-        return self.hook.get_production_job(production_job_id=job_id).result.state.current_state
+        return self.hook.get_production_job_status(production_job_id=job_id)
 
     def is_terminal_status(self, job_id):
         job_status = self.get_current_status(job_id)

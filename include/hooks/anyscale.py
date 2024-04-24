@@ -26,6 +26,7 @@ class AnyscaleHook(BaseHook):
     def __init__(self, conn_id: str = default_conn_name, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.conn_id = conn_id
+        self.sdk = None
         self.kwargs = kwargs
         logger.info(f"Initializing AnyscaleHook with connection_id: {conn_id}")
 
@@ -55,3 +56,21 @@ class AnyscaleHook(BaseHook):
         except Exception as e:
             logger.error(f"Unable to authenticate with Anyscale cloud. Error: {e}")
             raise AirflowException(f"Unable to authenticate with Anyscale cloud. Error: {e}")
+    
+    def create_job(self, config: CreateProductionJob) -> str:
+
+        if self.sdk is None:
+            self.sdk = self.conn
+        
+        prod_job = self.sdk.create_job(config)
+
+        return prod_job
+        
+    def get_production_job_status(self, job_id: str) -> str:
+        
+        if self.sdk is None:
+            self.sdk = self.conn
+        
+        return self.sdk.get_production_job(production_job_id=job_id).result.state.current_state
+
+
