@@ -6,8 +6,6 @@ from include.operators.anyscale import SubmitAnyscaleJob
 from include.hooks.anyscale import AnyscaleHook
 from include.models.CreateProductionJobConfig import RayRuntimeEnvConfig,JobConfiguration
 
-from datetime import datetime, timedelta
-
 from airflow.models.connection import Connection
 from airflow.providers.amazon.aws.transfers.local_to_s3 import LocalFilesystemToS3Operator
 from airflow.utils.dates import days_ago
@@ -65,7 +63,7 @@ submit_anyscale_job = SubmitAnyscaleJob(
              "build_id": 'anyscaleray2100-py39',
              "compute_config_id": 'cpt_8kfdcvmckjnjqd1xwnctmpldl4',
              "runtime_env": runtime_env.to_dict(),
-             "max_retries": 2}
+             "max_retries": 2},
     dag=dag,
 )
 
