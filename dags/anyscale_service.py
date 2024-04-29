@@ -1,15 +1,11 @@
+
 from datetime import datetime, timedelta
 from airflow import DAG
 import os
-# Assuming these hooks and operators are custom or provided by a plugin
-from include.operators.anyscale import SubmitAnyscaleJob, RolloutAnyscaleService
-from include.hooks.anyscale import AnyscaleHook
-from include.models.CreateProductionJobConfig import RayRuntimeEnvConfig,JobConfiguration
 
-from datetime import datetime, timedelta
+from include.operators.anyscale import RolloutAnyscaleService
 
 from airflow.models.connection import Connection
-from airflow.providers.amazon.aws.transfers.local_to_s3 import LocalFilesystemToS3Operator
 from airflow.utils.dates import days_ago
 
 default_args = {
@@ -50,7 +46,7 @@ deploy_anyscale_service = RolloutAnyscaleService(
             }
         ]
     },
-    version = 10,
+    version = 11,
     dag=dag
 )
 

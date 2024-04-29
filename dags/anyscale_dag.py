@@ -36,9 +36,12 @@ dag = DAG(
     catchup=False,
 )
 
-runtime_env = RayRuntimeEnvConfig(working_dir=FILE_PATH,
+"""runtime_env = RayRuntimeEnvConfig(working_dir=FILE_PATH,
                                   upload_path = "s3://"+BUCKET_NAME,
-                                  pip=["requests","pandas","numpy","torch"])
+                                  pip=["requests","pandas","numpy","torch"])"""
+runtime_env = {"working_dir": FILE_PATH,
+               "upload_path": "s3://"+BUCKET_NAME,
+               "pip": ["requests","pandas","numpy","torch"]}
 
 # Extract the filename from the file path for S3 key construction
 filename = os.path.basename(FILE_PATH)
@@ -62,7 +65,7 @@ submit_anyscale_job = SubmitAnyscaleJob(
     config = {"entrypoint": 'python script.py',
              "build_id": 'anyscaleray2100-py39',
              "compute_config_id": 'cpt_8kfdcvmckjnjqd1xwnctmpldl4',
-             "runtime_env": runtime_env.to_dict(),
+             "runtime_env": runtime_env,
              "max_retries": 2},
     dag=dag,
 )
