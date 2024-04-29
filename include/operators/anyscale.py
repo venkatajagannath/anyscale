@@ -129,8 +129,9 @@ class RolloutAnyscaleService(BaseOperator):
                 rollout_strategy: str = None,
                 ray_gcs_external_storage_config: dict = None,
                 auto_complete_rollout: bool = None,
-                max_surge_percent: int = None):
-        super(RolloutAnyscaleService, self).__init__()
+                max_surge_percent: int = None,
+                **kwargs):
+        super(RolloutAnyscaleService, self).__init__(**kwargs)
         self.conn_id = conn_id
 
         # Set up explicit parameters
