@@ -58,7 +58,7 @@ upload_file_to_s3 = LocalFilesystemToS3Operator(
 submit_anyscale_job = SubmitAnyscaleJob(
     task_id='submit_anyscale_job',
     conn_id = ANYSCALE_CONN_ID,
-    job_name = 'AstroJob',
+    name = 'AstroJob',
     config = {"entrypoint": 'python script.py',
              "build_id": 'anyscaleray2100-py39',
              "compute_config_id": 'cpt_8kfdcvmckjnjqd1xwnctmpldl4',
