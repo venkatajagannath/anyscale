@@ -121,8 +121,16 @@ class RolloutAnyscaleService(BaseOperator):
                 ray_serve_config: object,
                 build_id: str,
                 compute_config_id: str,
-                 **kwargs):
-        super(RolloutAnyscaleService, self).__init__(**kwargs)
+                description: str = None,
+                project_id: str = None,
+                version: str = None,
+                canary_percent: int = None,
+                config: dict = None,
+                rollout_strategy: str = None,
+                ray_gcs_external_storage_config: dict = None,
+                auto_complete_rollout: bool = None,
+                max_surge_percent: int = None):
+        super(RolloutAnyscaleService, self).__init__()
         self.conn_id = conn_id
 
         # Set up explicit parameters
@@ -130,14 +138,23 @@ class RolloutAnyscaleService(BaseOperator):
             'name': name,
             'ray_serve_config': ray_serve_config,
             'build_id': build_id,
-            'compute_config_id': compute_config_id
+            'compute_config_id': compute_config_id,
+            'description': description,
+            'project_id': project_id,
+            'version': version,
+            'canary_percent': canary_percent,
+            'config': config,
+            'rollout_strategy': rollout_strategy,
+            'ray_gcs_external_storage_config': ray_gcs_external_storage_config,
+            'auto_complete_rollout': auto_complete_rollout,
+            'max_surge_percent': max_surge_percent
         }
 
-        # Remove specific keys from kwargs which are related to Airflow infrastructure
+        """# Remove specific keys from kwargs which are related to Airflow infrastructure
         for key in ['task_id', 'dag', 'default_args', 'owner', 'email', 'start_date','depends_on_past','email_on_failure','email_on_retry','retries','retry_delay']:
             kwargs.pop(key, None)  # Use pop with default to avoid KeyError
 
-        self.service_params.update(kwargs)
+        self.service_params.update(kwargs)"""
 
     @cached_property
     def hook(self) -> AnyscaleHook:

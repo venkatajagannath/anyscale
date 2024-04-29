@@ -50,6 +50,8 @@ deploy_anyscale_service = RolloutAnyscaleService(
             }
         ]
     },
+    version = 10,
+    canary_percent = 50,
     dag=dag
 )
 
