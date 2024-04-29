@@ -4,7 +4,6 @@ import os
 # Assuming these hooks and operators are custom or provided by a plugin
 from include.operators.anyscale import SubmitAnyscaleJob
 from include.hooks.anyscale import AnyscaleHook
-from include.models.CreateProductionJobConfig import RayRuntimeEnvConfig,JobConfiguration
 
 from airflow.models.connection import Connection
 from airflow.providers.amazon.aws.transfers.local_to_s3 import LocalFilesystemToS3Operator
