@@ -59,13 +59,6 @@ class SubmitAnyscaleJob(BaseOperator):
         if not self.hook:
             self.log.info("SDK is not available.")
             raise AirflowException("SDK is not available.")
-        
-        """job_config = CreateProductionJobConfig(entrypoint=self.entrypoint,
-                                               runtime_env=self.runtime_env,
-                                               build_id=self.build_id,
-                                               compute_config_id=self.compute_config_id,
-                                               compute_config=self.compute_config,
-                                               max_retries=self.max_retries)"""
 
         # Submit the job to Anyscale
         prod_job = self.hook.create_job(CreateProductionJob(name=self.name, config=self.config))
@@ -151,12 +144,6 @@ class RolloutAnyscaleService(BaseOperator):
             'max_surge_percent': max_surge_percent
         }
 
-        """# Remove specific keys from kwargs which are related to Airflow infrastructure
-        for key in ['task_id', 'dag', 'default_args', 'owner', 'email', 'start_date','depends_on_past','email_on_failure','email_on_retry','retries','retry_delay']:
-            kwargs.pop(key, None)  # Use pop with default to avoid KeyError
-
-        self.service_params.update(kwargs)"""
-
     @cached_property
     def hook(self) -> AnyscaleHook:
         """Return an instance of the AnyscaleHook."""
@@ -180,13 +167,12 @@ class RolloutAnyscaleService(BaseOperator):
                                         timeout= 600),
             method_name="execute_complete")
 
-        self.log.info(f"Service rollout response: {service_response}")
-        
+        self.log.info(f"Service rollout response: {service_response}")        
         return service_response
     
     def execute_complete(self, context: Context, event: TriggerEvent) -> None:
+        
         self.log.info(f"Execution completed...")
-
         self.service_id = event["service_id"]
         
         if event["status"] == 'failed':
