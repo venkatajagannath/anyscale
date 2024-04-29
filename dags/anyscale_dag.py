@@ -61,12 +61,11 @@ submit_anyscale_job = SubmitAnyscaleJob(
     task_id='submit_anyscale_job',
     conn_id = ANYSCALE_CONN_ID,
     job_name = 'AstroJob',
-    build_id = 'anyscaleray2100-py39',
-    entrypoint = 'python script.py',
-    compute_config_id = 'cpt_8kfdcvmckjnjqd1xwnctmpldl4',
-    compute_config = None,
-    runtime_env = runtime_env.to_dict(),
-    max_retries= 2,
+    config = {"entrypoint": 'python script.py',
+             "build_id": 'anyscaleray2100-py39',
+             "compute_config_id": 'cpt_8kfdcvmckjnjqd1xwnctmpldl4',
+             "runtime_env": runtime_env.to_dict(),
+             "max_retries": 2}
     dag=dag,
 )
 

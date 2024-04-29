@@ -26,29 +26,22 @@ class SubmitAnyscaleJob(BaseOperator):
     
     def __init__(self,
                  conn_id : str,
-                 job_name: str,
-                 build_id: str,
-                 entrypoint: str,
-                 compute_config_id: str = None,
-                 compute_config: dict = None,                 
-                 runtime_env: str = None,                 
-                 max_retries: int = None,
+                 name: str,
+                 config: dict,
+                 description: str = None,
+                 project_id: str = None,
+                 job_queue_config: dict = None,
                  *args, **kwargs):
         super(SubmitAnyscaleJob, self).__init__(*args, **kwargs)
         self.conn_id = conn_id
-        self.job_name = job_name
-        self.build_id = build_id
-        self.runtime_env = runtime_env
-        self.entrypoint = entrypoint
-        self.compute_config_id = compute_config_id
-        self.compute_config = compute_config
-        self.max_retries = max_retries
-        self.job_config_kwargs = kwargs
+        self.name = name
+        self.config = config
+        self.description = description
+        self.project_id = project_id
+        self.job_queue_config = job_queue_config
         self.job_id = None
 
-        if not self.entrypoint:
-            raise AirflowException("Entrypoint is required.")
-        if not self.job_name:
+        if not self.name:
             raise AirflowException("Job name is required.")
     
     def on_kill(self):
@@ -67,15 +60,15 @@ class SubmitAnyscaleJob(BaseOperator):
             self.log.info("SDK is not available.")
             raise AirflowException("SDK is not available.")
         
-        job_config = CreateProductionJobConfig(entrypoint=self.entrypoint,
+        """job_config = CreateProductionJobConfig(entrypoint=self.entrypoint,
                                                runtime_env=self.runtime_env,
                                                build_id=self.build_id,
                                                compute_config_id=self.compute_config_id,
                                                compute_config=self.compute_config,
-                                               max_retries=self.max_retries)
+                                               max_retries=self.max_retries)"""
 
         # Submit the job to Anyscale
-        prod_job = self.hook.create_job(CreateProductionJob(name=self.job_name, config=job_config))
+        prod_job = self.hook.create_job(CreateProductionJob(name=self.name, config=self.config))
         self.log.info(f"Submitted Anyscale job with ID: {prod_job.result.id}")
 
         self.job_id = prod_job.result.id

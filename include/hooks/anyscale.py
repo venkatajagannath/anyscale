@@ -70,7 +70,7 @@ class AnyscaleHook(BaseHook):
         if len(logs)>0:
             for line in logs.split("\n"):
                 logs_list.append(line)
-        return logs_list
+        return logs_list 
 
     def get_production_job_status(self, job_id: str) -> str:
         """Retrieve the status of a production job."""
