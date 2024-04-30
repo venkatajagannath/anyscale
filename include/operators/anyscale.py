@@ -4,6 +4,7 @@ import logging
 import os
 
 # Third-party imports
+import anyscale
 from anyscale import AnyscaleSDK
 from anyscale.sdk.anyscale_client.models import *
 from dataclasses import dataclass, field
@@ -59,6 +60,8 @@ class SubmitAnyscaleJob(BaseOperator):
         if not self.hook:
             self.log.info("SDK is not available.")
             raise AirflowException("SDK is not available.")
+        else:
+            self.log.info(f"Using Anyscale version {anyscale.__version__}")
 
         # Submit the job to Anyscale
         prod_job = self.hook.create_job(CreateProductionJob(name=self.name, config=self.config))

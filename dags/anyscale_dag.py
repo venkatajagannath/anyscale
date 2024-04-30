@@ -35,9 +35,6 @@ dag = DAG(
     catchup=False,
 )
 
-"""runtime_env = RayRuntimeEnvConfig(working_dir=FILE_PATH,
-                                  upload_path = "s3://"+BUCKET_NAME,
-                                  pip=["requests","pandas","numpy","torch"])"""
 runtime_env = {"working_dir": FILE_PATH,
                "upload_path": "s3://"+BUCKET_NAME,
                "pip": ["requests","pandas","numpy","torch"]}
