@@ -54,10 +54,10 @@ class AnyscaleJobTrigger(BaseTrigger):
             job_status = self.get_current_status(self.job_id)
             self.logger.info(f"Current status of the job is {job_status}")
             
-            """self.log.info("Printing production job logs")
+            self.log.info("Printing production job logs")
             logs = self.hook.fetch_production_job_logs(self.job_id)
             for line in logs:
-                self.logger.info(line)"""
+                self.logger.info(line)
             
             yield TriggerEvent({
                 "status": job_status,
