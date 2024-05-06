@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import Any, Dict
 
@@ -71,6 +72,18 @@ class AnyscaleHook(BaseHook):
             for line in logs.split("\n"):
                 logs_list.append(line)
         return logs_list 
+    
+    def terminate_job(self, job_id: str):
+        sdk = self.get_sdk()
+        prod_response = sdk.terminate_job(production_job_id = job_id)
+
+        # Sleep 5 seconds to ensure the command is executed on anyscale
+        time.sleep(5)
+        if prod_response.result.state.goal_state == 'TERMINATED':
+            logger.info(f"Job id : {job_id} is being TERMINATED")
+            return True
+        else:
+            return False
 
     def get_production_job_status(self, job_id: str) -> str:
         """Retrieve the status of a production job."""
