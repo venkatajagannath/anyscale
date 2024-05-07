@@ -103,7 +103,7 @@ class SubmitAnyscaleJob(BaseOperator):
         self.production_job_id = event["job_id"]
 
         self.log.info("Printing production job logs")
-        logs = self.hook.fetch_production_job_logs(self.production_job_id)
+        logs = self.hook.fetch_production_job_logs(self.job_id)
         for line in logs:
             self.log.info(line)
         
