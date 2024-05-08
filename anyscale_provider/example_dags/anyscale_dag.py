@@ -28,7 +28,7 @@ FILE_PATH = '/usr/local/airflow/example_dags/ray_scripts/script.py'
 AWS_CONN_ID = 'aws_conn'
 
 dag = DAG(
-    'anyscale_workflow',
+    'sample_anyscale_workflow',
     default_args=default_args,
     description='A DAG to interact with Anyscale triggered manually',
     schedule_interval=None,  # This DAG is not scheduled, only triggered manually

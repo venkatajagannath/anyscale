@@ -22,7 +22,7 @@ default_args = {
 ANYSCALE_CONN_ID = "anyscale_conn"
 
 dag = DAG(
-    'anyscale_service_workflow',
+    'sample_anyscale_service_workflow',
     default_args=default_args,
     description='A DAG to interact with Anyscale triggered manually',
     schedule_interval=None,  # This DAG is not scheduled, only triggered manually
