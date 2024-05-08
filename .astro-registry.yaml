@@ -18,12 +18,12 @@ docs-url: https://github.com/astronomer/airflow-provider-anyscale/blob/main/READ
 # should be "sample_provider.hooks.sample.SampleHook".
 
 hooks:
-  - module: sample_provider.hooks.sample.AnyscaleHook
+  - module: anyscale_provider.hooks.anyscale.AnyscaleHook
 
 operators:
-  - module: sample_provider.operators.sample.SubmitAnyscaleJob
-  - module: sample_provider.operators.sample.RolloutAnyscaleService
+  - module: anyscale_provider.operators.anyscale.SubmitAnyscaleJob
+  - module: anyscale_provider.operators.anyscale.RolloutAnyscaleService
 
 triggers:
-  - module: sample_provider.sensors.sample.AnyscaleJobTrigger
-  - module: sample_provider.sensors.sample.AnyscaleServiceTrigger
+  - module: anyscale_provider.triggers.anyscale.AnyscaleJobTrigger
+  - module: anyscale_provider.triggers.anyscale.AnyscaleServiceTrigger

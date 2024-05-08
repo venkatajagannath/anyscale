@@ -8,6 +8,5 @@ def get_provider_info():
         "connection-types": [
             {"connection-type": "anyscale", "hook-class-name": "anyscale_provider.hooks.anyscale.AnyscaleHook"}
         ],
-        "extra-links": ["anyscale_provider.operators.anyscale.anyscaleOperatorExtraLink"],
         "versions": [__version__],  # Required
     }
