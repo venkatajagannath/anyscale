@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 from airflow.exceptions import AirflowException
-from include.hooks.anyscale import AnyscaleHook
+from anyscale_provider.hooks.anyscale import AnyscaleHook
 from anyscale import AnyscaleSDK
 
 class TestAnyscaleHook(unittest.TestCase):
