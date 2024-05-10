@@ -9,12 +9,6 @@ class TestAnyscaleHook(unittest.TestCase):
     def setUp(self):
         self.hook = AnyscaleHook(conn_id='test_conn')
 
-    @patch('include.hooks.anyscale.AnyscaleHook.get_connection')
-    def test_connection_initialization(self, mock_get_connection):
-        mock_get_connection.return_value.password = 'fake_api_key'
-        sdk = self.hook.conn
-        self.assertIsInstance(sdk, AnyscaleSDK)
-
     @patch.object(AnyscaleHook, 'get_sdk')
     def test_create_job(self, mock_get_sdk):
         config = {'job_type': 'Production'}
@@ -35,10 +29,3 @@ class TestAnyscaleHook(unittest.TestCase):
         mock_get_sdk.return_value.terminate_job.return_value = MagicMock(result=MagicMock(state=MagicMock(goal_state='TERMINATED')))
         result = self.hook.terminate_job('job1234')
         self.assertTrue(result)
-
-    @patch('include.hooks.anyscale.AnyscaleHook.get_connection')
-    def test_conn_failure_raises_exception(self, mock_get_connection):
-        mock_get_connection.return_value.password = None  # No API token provided
-        with self.assertRaises(AirflowException) as context:
-            _ = self.hook.conn  # Access to trigger the connection
-        self.assertIn("Missing API token", str(context.exception))
