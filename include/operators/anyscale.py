@@ -2,11 +2,14 @@
 # Standard library imports
 import logging
 import os
+import time
+from typing import List, Dict, Union
 
 # Third-party imports
 import anyscale
-from anyscale.sdk.anyscale_client.models import *
-from typing import Optional
+from anyscale.compute_config.models import (
+    ComputeConfig, HeadNodeConfig, MarketType, WorkerNodeGroupConfig
+)
 
 # Airflow imports
 from airflow.compat.functools import cached_property
@@ -15,7 +18,7 @@ from airflow.models import BaseOperator
 from airflow.utils.context import Context
 from airflow.triggers.base import TriggerEvent
 from airflow.utils.decorators import apply_defaults
-from include.hooks.anyscale import AnyscaleHook
+from include.hooks.anyscale import AnyscaleHook,AnyscaleHook_
 from include.triggers.anyscale import AnyscaleJobTrigger, AnyscaleServiceTrigger
 
 logging.basicConfig(level=logging.DEBUG)
@@ -23,24 +26,53 @@ logging.basicConfig(level=logging.DEBUG)
 class SubmitAnyscaleJob(BaseOperator):
     
     def __init__(self,
-                 conn_id : str,
+                 conn_id: str,
                  name: str,
-                 config: dict,
-                 description: str = None,
-                 project_id: str = None,
-                 job_queue_config: dict = None,
+                 image_uri: str,
+                 compute_config: Union[ComputeConfig, dict, str],
+                 working_dir: str,
+                 excludes: List[str],
+                 requirements: Union[str, List[str]],
+                 env_vars: Dict[str, str],
+                 py_modules: List[str],
+                 entrypoint: str,
+                 max_retries: int,
                  *args, **kwargs):
         super(SubmitAnyscaleJob, self).__init__(*args, **kwargs)
         self.conn_id = conn_id
         self.name = name
-        self.config = config
-        self.description = description
-        self.project_id = project_id
-        self.job_queue_config = job_queue_config
+        self.image_uri = image_uri
+        self.compute_config = compute_config
+        self.working_dir = working_dir
+        self.excludes = excludes
+        self.requirements = requirements
+        self.env_vars = env_vars
+        self.py_modules = py_modules
+        self.entrypoint = entrypoint
+        self.max_retries = max_retries
+
         self.job_id = None
+        self.created_at = None
+
+        self.fields = {
+            "name": name,
+            "image_uri": image_uri,
+            "compute_config": compute_config,
+            "working_dir": working_dir,
+            "excludes": excludes,
+            "requirements": requirements,
+            "env_vars": env_vars,
+            "py_modules": py_modules,
+            "entrypoint": entrypoint,
+            "max_retries": max_retries
+        }
 
         if not self.name:
             raise AirflowException("Job name is required.")
+        
+        # Ensure entrypoint is not empty
+        if not self.entrypoint:
+            raise AirflowException("Entrypoint must be specified.")
     
     def on_kill(self):
         if self.job_id is not None:
@@ -49,9 +81,9 @@ class SubmitAnyscaleJob(BaseOperator):
         return self.job_id
     
     @cached_property
-    def hook(self) -> AnyscaleHook:
+    def hook(self) -> AnyscaleHook_:
         """Return an instance of the AnyscaleHook."""
-        return AnyscaleHook(conn_id=self.conn_id)
+        return AnyscaleHook_(conn_id=self.conn_id)
 
     def execute(self, context: Context):
         
@@ -62,54 +94,49 @@ class SubmitAnyscaleJob(BaseOperator):
             self.log.info(f"Using Anyscale version {anyscale.__version__}")
 
         # Submit the job to Anyscale
-        prod_job = self.hook.create_job(CreateProductionJob(name=self.name, config=self.config))
-        self.log.info(f"Submitted Anyscale job with ID: {prod_job.result.id}")
+        self.job_id = self.hook.submit_job(self.fields)
+        self.created_at = time.time()
+        self.log.info(f"Submitted Anyscale job with ID: {self.job_id}")
 
-        self.job_id = prod_job.result.id
         current_status = self.get_current_status(self.job_id)
         self.log.info(f"Current status for {self.job_id} is: {current_status}")
 
-        self.process_job_status(prod_job, current_status)
+        self.process_job_status(self.job_id, current_status)
         
         return self.job_id
     
-    def process_job_status(self, prod_job, current_status):
+    def process_job_status(self, job_id, current_status):
         if current_status in ("RUNNING", "AWAITING_CLUSTER_START", "PENDING", "RESTARTING", "UPDATING"):
-            self.defer_job_polling(prod_job)
+            self.defer_job_polling(job_id)
         elif current_status == "SUCCESS":
-            self.log.info(f"Job {self.job_id} completed successfully.")
+            self.log.info(f"Job {job_id} completed successfully.")
         elif current_status in ("ERRORED", "BROKEN", "OUT_OF_RETRIES"):
-            raise AirflowException(f"Job {self.job_id} failed.")
+            raise AirflowException(f"Job {job_id} failed.")
         elif current_status == "TERMINATED":
-            raise AirflowException(f"Job {self.job_id} was cancelled.")
+            raise AirflowException(f"Job {job_id} was cancelled.")
         else:
-            raise Exception(f"Unexpected state `{current_status}` for job_id `{self.job_id}`.")
+            raise Exception(f"Unexpected state `{current_status}` for job_id `{job_id}`.")
     
-    def defer_job_polling(self, prod_job):
+    def defer_job_polling(self, job_id):
         self.log.info("Deferring the polling to AnyscaleJobTrigger...")
         self.defer(trigger=AnyscaleJobTrigger(conn_id=self.conn_id,
-                                              job_id=prod_job.result.id,
-                                              job_start_time=prod_job.result.created_at,
+                                              job_id = job_id,
+                                              job_start_time=self.created_at,
                                               poll_interval=60),
                    method_name="execute_complete")
 
     def get_current_status(self, job_id):
-        return self.hook.get_production_job_status(job_id=job_id)
+        return self.hook.get_job_status(job_id=job_id)
 
     def execute_complete(self, context: Context, event: TriggerEvent) -> None:
 
-        self.production_job_id = event["job_id"]
-
-        self.log.info(f"Printing production job logs for job id: {self.production_job_id}")
-        logs = self.hook.fetch_production_job_logs(self.job_id)
-        for line in logs:
-            self.log.info(line)
+        current_job_id = event["job_id"]
         
         if event["status"] in ("OUT_OF_RETRIES", "TERMINATED", "ERRORED"):
-            self.log.info(f"Anyscale job {self.production_job_id} ended with status: {event['status']}")
-            raise AirflowException(f"Job {self.production_job_id} failed with error {event['message']}")
+            self.log.info(f"Anyscale job {current_job_id} ended with status: {event['status']}")
+            raise AirflowException(f"Job {current_job_id} failed with error {event['message']}")
         else:
-            self.log.info(f"Anyscale job {self.production_job_id} completed with status: {event['status']}")
+            self.log.info(f"Anyscale job {current_job_id} completed with status: {event['status']}")
         return None
 
 class RolloutAnyscaleService(BaseOperator):

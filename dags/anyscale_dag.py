@@ -3,7 +3,6 @@ from airflow import DAG
 import os
 # Assuming these hooks and operators are custom or provided by a plugin
 from include.operators.anyscale import SubmitAnyscaleJob
-from include.hooks.anyscale import AnyscaleHook
 
 from airflow.models.connection import Connection
 from airflow.providers.amazon.aws.transfers.local_to_s3 import LocalFilesystemToS3Operator
@@ -35,9 +34,7 @@ dag = DAG(
     catchup=False,
 )
 
-runtime_env = {"working_dir": FILE_PATH,
-               "upload_path": "s3://"+BUCKET_NAME,
-               "pip": ["requests","pandas","numpy","torch"]}
+
 
 # Extract the filename from the file path for S3 key construction
 filename = os.path.basename(FILE_PATH)
@@ -53,16 +50,16 @@ upload_file_to_s3 = LocalFilesystemToS3Operator(
     dag=dag
 )
 
-
 submit_anyscale_job = SubmitAnyscaleJob(
     task_id='submit_anyscale_job',
     conn_id = ANYSCALE_CONN_ID,
     name = 'AstroJob',
-    config = {"entrypoint": 'python script.py',
-             "build_id": 'anyscaleray2100-py39',
-             "compute_config_id": 'cpt_8kfdcvmckjnjqd1xwnctmpldl4',
-             "runtime_env": runtime_env,
-             "max_retries": 2},
+    image_uri = 'anyscaleray2100-py39', 
+    compute_config = 'cpt_8kfdcvmckjnjqd1xwnctmpldl4',
+    working_dir = FILE_PATH,
+    entrypoint= 'python script.py',
+    requirements = ["requests","pandas","numpy","torch"],
+    max_retries = 1,
     dag=dag,
 )
 
