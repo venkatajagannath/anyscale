@@ -96,9 +96,9 @@ class AnyscaleServiceTrigger(BaseTrigger):
         self.end_time = time.time() + timeout
 
     @cached_property
-    def hook(self) -> AnyscaleHook:
+    def hook(self) -> AnyscaleHook_:
         """Return an instance of the AnyscaleHook."""
-        return AnyscaleHook(conn_id=self.conn_id)
+        return AnyscaleHook_(conn_id=self.conn_id)
 
     def serialize(self):
         return ("include.triggers.anyscale.AnyscaleServiceTrigger", {

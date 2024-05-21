@@ -3,13 +3,14 @@
 import logging
 import os
 import time
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Any
 
 # Third-party imports
 import anyscale
 from anyscale.compute_config.models import (
     ComputeConfig, HeadNodeConfig, MarketType, WorkerNodeGroupConfig
 )
+from anyscale.service.models import ServiceConfig, RayGCSExternalStorageConfig
 
 # Airflow imports
 from airflow.compat.functools import cached_property
@@ -142,78 +143,97 @@ class SubmitAnyscaleJob(BaseOperator):
 class RolloutAnyscaleService(BaseOperator):
 
     def __init__(self,
-                conn_id: str,
-                name: str,
-                ray_serve_config: object,
-                build_id: str,
-                compute_config_id: str,
-                description: str = None,
-                project_id: str = None,
-                version: str = None,
-                canary_percent: int = None,
-                config: dict = None,
-                rollout_strategy: str = None,
-                ray_gcs_external_storage_config: dict = None,
-                auto_complete_rollout: bool = None,
-                max_surge_percent: int = None,
-                **kwargs):
+             conn_id: str,
+             name: Union[str, None],
+             image_uri: Union[str, None],
+             containerfile: Union[str, None] = None,
+             compute_config: Union[ComputeConfig, dict, str, None] = None,
+             working_dir: Union[str, None] = None,
+             excludes: Union[List[str], None] = None,
+             requirements: Union[str, List[str], None] = None,
+             env_vars: Union[Dict[str, str], None] = None,
+             py_modules: Union[List[str], None] = None,
+             applications: List[Dict[str, Any]] = None,
+             query_auth_token_enabled: bool = False,
+             http_options: Union[Dict[str, Any], None] = None,
+             grpc_options: Union[Dict[str, Any], None] = None,
+             logging_config: Union[Dict[str, Any], None] = None,
+             ray_gcs_external_storage_config: Union[RayGCSExternalStorageConfig, dict, None] = None,
+             in_place: bool = False,
+             canary_percent: Union[int, None] = None,
+             max_surge_percent: Union[int, None] = None,
+             **kwargs):
         super(RolloutAnyscaleService, self).__init__(**kwargs)
         self.conn_id = conn_id
 
         # Set up explicit parameters
         self.service_params = {
             'name': name,
-            'ray_serve_config': ray_serve_config,
-            'build_id': build_id,
-            'compute_config_id': compute_config_id,
-            'description': description,
-            'project_id': project_id,
-            'version': version,
-            'canary_percent': canary_percent,
-            'config': config,
-            'rollout_strategy': rollout_strategy,
-            'ray_gcs_external_storage_config': ray_gcs_external_storage_config,
-            'auto_complete_rollout': auto_complete_rollout,
-            'max_surge_percent': max_surge_percent
+            'image_uri': image_uri,
+            'containerfile': containerfile,
+            'compute_config': compute_config,
+            'working_dir': working_dir,
+            'excludes': excludes,
+            'requirements': requirements,
+            'env_vars': env_vars,
+            'py_modules': py_modules,
+            'applications': applications,
+            'query_auth_token_enabled': query_auth_token_enabled,
+            'http_options': http_options,
+            'grpc_options': grpc_options,
+            'logging_config': logging_config,
+            'ray_gcs_external_storage_config': ray_gcs_external_storage_config
         }
 
+        self.in_place = in_place
+        self.canary_percent = canary_percent
+        self.max_surge_percent = max_surge_percent
+
+        # Ensure name is not empty
+        if not self.service_params['name']:
+            raise ValueError("Service name is required.")
+        
+        # Ensure at least one application is specified
+        if not self.service_params['applications']:
+            raise ValueError("At least one application must be specified.")
+
     @cached_property
-    def hook(self) -> AnyscaleHook:
+    def hook(self) -> AnyscaleHook_:
         """Return an instance of the AnyscaleHook."""
-        return AnyscaleHook(conn_id=self.conn_id)
+        return AnyscaleHook_(conn_id=self.conn_id)
     
     def execute(self, context):
         if not self.hook:
             self.log.info(f"SDK is not available...")
             raise AirflowException("SDK is not available")
-
-        # Dynamically create ApplyServiceModel instance from provided parameters
-        service_model = ApplyServiceModel(**self.service_params)
         
         # Call the SDK method with the dynamically created service model
-        service_response = self.hook.rollout_service(apply_service_model=service_model)
+        service_id = self.hook.deploy_service(self.service_params,
+                                              self.in_place,
+                                              self.canary_percent,
+                                              self.max_surge_percent)
 
         self.defer(trigger=AnyscaleServiceTrigger(conn_id = self.conn_id,
-                                        service_id = service_response.result.id,
+                                        service_id = service_id,
                                         expected_state = 'RUNNING',
                                         poll_interval= 60,
                                         timeout= 600),
             method_name="execute_complete")
 
-        self.log.info(f"Service rollout response: {service_response}")        
-        return service_response
+        self.log.info(f"Service rollout id: {service_id}")        
+        return service_id
     
     def execute_complete(self, context: Context, event: TriggerEvent) -> None:
         
         self.log.info(f"Execution completed...")
-        self.service_id = event["service_id"]
+        service_id = event["service_id"]
         
         if event["status"] == 'failed':
-            self.log.info(f"Anyscale service deployment {self.service_id} ended with status : {event['status']}")
-            raise AirflowException(f"Job {self.service_id} failed with error {event['message']}")
+            self.log.info(f"Anyscale service deployment {service_id} ended with status : {event['status']}")
+            raise AirflowException(f"Job {service_id} failed with error {event['message']}")
         else:
             # This method gets called when the trigger fires that the job is complete
-            self.log.info(f"Anyscale service deployment {self.service_id} completed with status: {event['status']}")
+            self.log.info(f"Anyscale service deployment {service_id} completed with status: {event['status']}")
 
         return None
     

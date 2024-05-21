@@ -33,23 +33,16 @@ deploy_anyscale_service = RolloutAnyscaleService(
     task_id="rollout_anyscale_service",
     conn_id = ANYSCALE_CONN_ID,
     name="AstroService",
-    build_id="bld_7qsgb3mnjp7juibl6jetl9lhbu",
-    compute_config_id="cpt_8kfdcvmckjnjqd1xwnctmpldl4",
-    ray_serve_config={ 
-        "applications": [
-            {
-                "name": "sentiment_analysis",
-                "runtime_env": {
-                    "working_dir": "https://github.com/anyscale/docs_examples/archive/refs/heads/main.zip"
-                },
-                "import_path": "sentiment_analysis.app:model",
-            }
-        ]
-    },
-    version = 11,
+    image_uri = 'bld_7qsgb3mnjp7juibl6jetl9lhbu',
+    compute_config = 'cpt_8kfdcvmckjnjqd1xwnctmpldl4',
+    working_dir = "https://github.com/anyscale/docs_examples/archive/refs/heads/main.zip",
+    applications = [
+        {"import_path": "sentiment_analysis.app:model"}
+    ],
+    in_place=True,
+    canary_percent= 50,
     dag=dag
 )
-
 
 # Defining the task sequence
 deploy_anyscale_service

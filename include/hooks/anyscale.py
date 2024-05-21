@@ -143,25 +143,22 @@ class AnyscaleHook_(BaseHook):
 
     # Example job interaction methods using environment authentication
     def submit_job(self, config: dict) -> str:
-        
         logger.info("Creating a job with configuration: {}".format(config))
         job_config = JobConfig(**config)
         job_id = anyscale.job.submit(job_config)
         return job_id
     
-    def rollout_service(self,config: dict) -> str:
- 
-        anyscale.service.deploy(
-                        ServiceConfig(
-                            name="my-service",
-                            applications=[
-                                {"import_path": "main:app"},
-                            ],
-                            working_dir=".",
-                        ),
-                        canary_percent=50,
-                    )
-        return
+    def deploy_service(self,config: dict,
+                       in_place: str = False,
+                       canary_percent: int = None,
+                       max_surge_percent: int = None) -> str:
+        logger.info("Deploying a service with configuration: {}".format(config))
+        service_config = ServiceConfig(**config)
+        service_id = anyscale.service.deploy(config = service_config,
+                                             in_place = in_place,
+                                             canary_percent = canary_percent,
+                                             max_surge_percent = max_surge_percent)
+        return service_id
 
     def get_job_status(self, job_id: str) -> str:
         logger.info("Fetching job status for Job name: {}".format(job_id))
@@ -171,17 +168,23 @@ class AnyscaleHook_(BaseHook):
         return anyscale.service.status(name=service_name)
     
     def terminate_job(self, job_id: str):
-        """Placeholder to terminate a job."""
         logger.info(f"Terminating Job ID: {job_id}")
-        # Simulated delay
-        time.sleep(5)
+        try:
+            job_id = anyscale.job.terminate(name=job_id)
+            # Simulated delay
+            time.sleep(5)
+        except Exception as e:
+            AirflowException(f"Job termination failed with error: {e}")
         return True
     
     def terminate_service(self, service_id: str):
-        """Placeholder to terminate a service."""
         logger.info(f"Terminating Service ID: {service_id}")
-        # Simulated delay
-        time.sleep(5)
+        try:
+            service_id = anyscale.service.terminate(name=service_id)
+            # Simulated delay
+            time.sleep(5)
+        except Exception as e:
+            AirflowException(f"Service termination failed with error: {e}")
         return True
     
     def fetch_logs(self, job_id: str):
