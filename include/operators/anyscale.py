@@ -31,12 +31,12 @@ class SubmitAnyscaleJob(BaseOperator):
                  image_uri: str,
                  compute_config: Union[ComputeConfig, dict, str],
                  working_dir: str,
-                 excludes: Union[List[str],None],
-                 requirements: Union[str, List[str], None],
-                 env_vars: Union[Dict[str, str], None],
-                 py_modules: Union[List[str], None],
                  entrypoint: str,
-                 max_retries: int,
+                 excludes: Union[List[str],None] = None,
+                 requirements: Union[str, List[str], None] = None,
+                 env_vars: Union[Dict[str, str], None] = None,
+                 py_modules: Union[List[str], None] = None,
+                 max_retries: int = 1,
                  *args, **kwargs):
         super(SubmitAnyscaleJob, self).__init__(*args, **kwargs)
         self.conn_id = conn_id
