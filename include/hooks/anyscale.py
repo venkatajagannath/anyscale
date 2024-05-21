@@ -4,6 +4,7 @@ import logging
 from typing import Any, Dict
 
 import anyscale
+from anyscale import AnyscaleSDK
 from anyscale.job.models import JobConfig
 from anyscale.job.models import JobStatus, JobState
 from anyscale.service.models import ServiceConfig, ServiceStatus, ServiceVersionState, ServiceState
