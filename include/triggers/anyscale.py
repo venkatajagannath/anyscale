@@ -7,8 +7,7 @@ from datetime import datetime, timedelta
 from airflow.triggers.base import BaseTrigger, TriggerEvent
 from airflow.compat.functools import cached_property
 
-from anyscale import AnyscaleSDK
-from include.hooks.anyscale import AnyscaleHook, AnyscaleHook_
+from include.hooks.anyscale import AnyscaleHook
 
 class AnyscaleJobTrigger(BaseTrigger):
     def __init__(self, conn_id, job_id, job_start_time, poll_interval=60, timeout=3600):  # Default timeout set to one hour
@@ -23,9 +22,9 @@ class AnyscaleJobTrigger(BaseTrigger):
         self.logger.setLevel(logging.INFO)
     
     @cached_property
-    def hook(self) -> AnyscaleHook_:
+    def hook(self) -> AnyscaleHook:
         """Return an instance of the AnyscaleHook."""
-        return AnyscaleHook_(conn_id=self.conn_id)
+        return AnyscaleHook(conn_id=self.conn_id)
 
     def serialize(self):
         return ("include.triggers.anyscale.AnyscaleJobTrigger", {
@@ -96,9 +95,9 @@ class AnyscaleServiceTrigger(BaseTrigger):
         self.end_time = time.time() + timeout
 
     @cached_property
-    def hook(self) -> AnyscaleHook_:
+    def hook(self) -> AnyscaleHook:
         """Return an instance of the AnyscaleHook."""
-        return AnyscaleHook_(conn_id=self.conn_id)
+        return AnyscaleHook(conn_id=self.conn_id)
 
     def serialize(self):
         return ("include.triggers.anyscale.AnyscaleServiceTrigger", {

@@ -19,7 +19,7 @@ from airflow.models import BaseOperator
 from airflow.utils.context import Context
 from airflow.triggers.base import TriggerEvent
 from airflow.utils.decorators import apply_defaults
-from include.hooks.anyscale import AnyscaleHook,AnyscaleHook_
+from include.hooks.anyscale import AnyscaleHook
 from include.triggers.anyscale import AnyscaleJobTrigger, AnyscaleServiceTrigger
 
 logging.basicConfig(level=logging.DEBUG)
@@ -82,9 +82,9 @@ class SubmitAnyscaleJob(BaseOperator):
         return self.job_id
     
     @cached_property
-    def hook(self) -> AnyscaleHook_:
+    def hook(self) -> AnyscaleHook:
         """Return an instance of the AnyscaleHook."""
-        return AnyscaleHook_(conn_id=self.conn_id)
+        return AnyscaleHook(conn_id=self.conn_id)
 
     def execute(self, context: Context):
         
@@ -198,9 +198,9 @@ class RolloutAnyscaleService(BaseOperator):
             raise ValueError("At least one application must be specified.")
 
     @cached_property
-    def hook(self) -> AnyscaleHook_:
+    def hook(self) -> AnyscaleHook:
         """Return an instance of the AnyscaleHook."""
-        return AnyscaleHook_(conn_id=self.conn_id)
+        return AnyscaleHook(conn_id=self.conn_id)
     
     def execute(self, context):
         if not self.hook:
