@@ -33,12 +33,12 @@ def sdk_command(
 
         @wraps(f)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
-            if key not in _LAZY_SDK_SINGLETONS:
-                _LAZY_SDK_SINGLETONS[key] = sdk_cls()
-
             # We disable the mypy linter here because it treats kwargs as a
             # P.kwargs object. mypy wrongly thinks kwargs can't be indexed.
             if "_sdk" not in kwargs:  # type: ignore
+                if key not in _LAZY_SDK_SINGLETONS:
+                    _LAZY_SDK_SINGLETONS[key] = sdk_cls()
+
                 kwargs["_sdk"] = _LAZY_SDK_SINGLETONS[key]  # type: ignore
 
             return f(*args, **kwargs)
