@@ -25,4 +25,4 @@ USER astro
 RUN pip install dist/anyscale-0.0.0.dev0-*.whl
 
 # Clean up the wheel file and build directory after installation (optional)
-RUN rm -rf /tmp/anyscale-0.0.0.dev0
+# RUN rm -rf /tmp/anyscale-0.0.0.dev0
