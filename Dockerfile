@@ -1,7 +1,13 @@
 FROM quay.io/astronomer/astro-runtime:11.3.0
 
+# Switch to the root user
+USER root
+
 # Install necessary build tools
 RUN apt-get update && apt-get install -y build-essential
+
+# Switch back to the astro user
+USER astro
 
 # Copy the anyscale-0.0.0.dev0 folder into the Docker image
 COPY anyscale-0.0.0.dev0 /tmp/anyscale-0.0.0.dev0
