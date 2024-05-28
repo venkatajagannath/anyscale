@@ -88,7 +88,7 @@ class AnyscaleJobTrigger(BaseTrigger):
         except Exception:
             self.log.exception("An error occurred while polling for job status.")
             yield TriggerEvent({
-                "status": "error",
+                "status": JobState.FAILED,
                 "message": "An error occurred while polling for job status.",
                 "job_id": self.job_id
             })
