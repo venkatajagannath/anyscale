@@ -34,7 +34,7 @@ deploy_anyscale_service = RolloutAnyscaleService(
     conn_id = ANYSCALE_CONN_ID,
     name="AstroService",
     image_uri = 'bld_7qsgb3mnjp7juibl6jetl9lhbu',
-    compute_config = 'cpt_wbkzkfzfjpngn71bcgp1mvdcsa',
+    compute_config = 'my-compute-config:1',
     working_dir = "https://github.com/anyscale/docs_examples/archive/refs/heads/main.zip",
     applications = [
         {"import_path": "sentiment_analysis.app:model"}
