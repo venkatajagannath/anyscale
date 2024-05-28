@@ -60,7 +60,7 @@ class AnyscaleJobTrigger(BaseTrigger):
 
     async def run(self):
         if not self.job_id:
-            self.logger.info("No job_id provided")
+            self.log.info("No job_id provided")
             yield TriggerEvent({"status": "error", "message": "No job_id provided to async trigger", "job_id": self.job_id})
         try:
             while not self.is_terminal_status(self.job_id):
@@ -74,7 +74,7 @@ class AnyscaleJobTrigger(BaseTrigger):
                 await asyncio.sleep(self.poll_interval)
             # Once out of the loop, the job has reached a terminal status
             job_status = self.get_current_status(self.job_id).state
-            self.logger.info(f"Current status of the job is {job_status}")
+            self.log.info(f"Current status of the job is {job_status}")
             
             yield TriggerEvent({
                 "status": job_status,
@@ -82,7 +82,7 @@ class AnyscaleJobTrigger(BaseTrigger):
                 "job_id": self.job_id
             })
         except Exception:
-            self.logger.exception("An error occurred while polling for job status.")
+            self.log.exception("An error occurred while polling for job status.")
             yield TriggerEvent({
                 "status": "error",
                 "message": "An error occurred while polling for job status.",
@@ -94,7 +94,7 @@ class AnyscaleJobTrigger(BaseTrigger):
 
     def is_terminal_status(self, job_id):
         job_status = self.get_current_status(job_id)
-        self.logger.info(f"Current job status for {job_id} is: {job_status.state}")
+        self.log.info(f"Current job status for {job_id} is: {job_status.state}")
         return job_status.state not in (JobState.STARTING, JobState.RUNNING,'RUNNING', 'PENDING', 'AWAITING_CLUSTER_START', 'RESTARTING')
 
 

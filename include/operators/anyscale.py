@@ -167,6 +167,7 @@ class SubmitAnyscaleJob(BaseOperator):
             self.log.info(f"Anyscale job {current_job_id} completed with status: {event['status']}")
         return None
 
+
 class RolloutAnyscaleService(BaseOperator):
 
     """
