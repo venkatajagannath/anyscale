@@ -1,0 +1,2 @@
+applications:
+  - import_path: main:app

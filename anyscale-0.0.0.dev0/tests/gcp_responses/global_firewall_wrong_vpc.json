@@ -1,0 +1,18 @@
+{
+    "kind": "compute#firewallPolicy",
+    "id": "7069622648881580319",
+    "creationTimestamp": "2023-03-08T17:35:44.800-08:00",
+    "name": "ian-global",
+    "description": "global firewall policy",
+    "rules": [],
+    "fingerprint": "nCQ7nA9Or8Q=",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/anyscale-bridge-deadbeef/global/firewallPolicies/global-firewall",
+    "selfLinkWithId": "https://www.googleapis.com/compute/v1/projects/anyscale-bridge-deadbeef/global/firewallPolicies/7069622648881580319",
+    "associations": [
+      {
+        "name": "default",
+        "attachmentTarget": "https://www.googleapis.com/compute/v1/projects/anyscale-bridge-deadbeef/global/networks/default"
+      }
+    ],
+    "ruleTupleCount": 15
+  }

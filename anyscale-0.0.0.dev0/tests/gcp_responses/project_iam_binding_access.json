@@ -1,0 +1,37 @@
+{
+    "version": 1,
+    "etag": "BwX2lXLiGNo=",
+    "bindings": [
+      {
+        "role": "roles/editor",
+        "members": [
+          "serviceAccount:754754754754-compute@developer.gserviceaccount.com",
+          "serviceAccount:anyscale-admin-editor@anyscale-bridge-deadbeef.iam.gserviceaccount.com",
+          "serviceAccount:anyscale-admin-editor-not-signer@anyscale-bridge-deadbeef.iam.gserviceaccount.com"
+        ]
+      },
+      {
+        "role": "roles/owner",
+        "members": [
+          "serviceAccount:anyscale-admin-owner@anyscale-bridge-deadbeef.iam.gserviceaccount.com",
+          "serviceAccount:754754754754-compute@developer.gserviceaccount.com"
+        ]
+      }
+    ],
+    "auditConfigs": [
+      {
+        "service": "sts.googleapis.com",
+        "auditLogConfigs": [
+          {
+            "logType": "ADMIN_READ"
+          },
+          {
+            "logType": "DATA_READ"
+          },
+          {
+            "logType": "DATA_WRITE"
+          }
+        ]
+      }
+    ]
+  }

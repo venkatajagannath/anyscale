@@ -1,0 +1,25 @@
+{
+    "name": "projects/anyscale-bridge-deadbeef/locations/us-west1-a/instances/regional-filestore",
+    "state": "READY",
+    "createTime": "2023-03-16T01:33:11.891945412Z",
+    "tier": "6",
+    "fileShares": [
+      {
+        "name": "something",
+        "capacityGb": "1024"
+      }
+    ],
+    "networks": [
+      {
+        "network": "vpc_one",
+        "modes": [
+          "MODE_IPV4"
+        ],
+        "reservedIpRange": "172.22.236.0/26",
+        "ipAddresses": [
+          "172.22.236.2"
+        ],
+        "connectMode": "DIRECT_PEERING"
+      }
+    ]
+  }

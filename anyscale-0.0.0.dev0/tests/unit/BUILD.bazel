@@ -1,0 +1,24 @@
+load("@py_deps//:requirements.bzl", "requirement")
+load("//bazel:python.bzl", "py_tests_with_shim")
+
+py_tests_with_shim(
+    size = "small",
+    srcs = glob(
+        [
+            "test_*.py",
+        ],
+    ),
+    data = [
+        "common.py",
+        "//frontend/cli/tests/unit/test_files:compute_config_files",
+        "//frontend/cli/tests/unit/test_files:containerfiles",
+        "//frontend/cli/tests/unit/test_files:job_config_files",
+        "//frontend/cli/tests/unit/test_files:requirements_files",
+        "//frontend/cli/tests/unit/test_files:service_config_files",
+        "//frontend/cli/tests/unit/test_files:working_dirs",
+    ],
+    deps = [
+        "//frontend/cli:anyscale",
+        requirement("pytest"),
+    ],
+)

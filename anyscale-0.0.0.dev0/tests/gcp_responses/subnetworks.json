@@ -1,0 +1,17 @@
+{
+    "kind": "compute#subnetwork",
+    "id": "3634159084297953624",
+    "creationTimestamp": "2022-05-10T19:30:15.021-07:00",
+    "name": "anyscale-subnetwork-0004",
+    "network": "https://www.googleapis.com/compute/v1/projects/project_name/global/networks/anyscale-vpc",
+    "ipCidrRange": "10.17.0.0/20",
+    "gatewayAddress": "10.17.0.1",
+    "region": "https://www.googleapis.com/compute/v1/projects/project_name/regions/us-central1",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/project_name/regions/us-central1/subnetworks/anyscale-subnetwork-0004",
+    "privateIpGoogleAccess": false,
+    "fingerprint": "fEFaRk3oLaE=",
+    "enableFlowLogs": true,
+    "privateIpv6GoogleAccess": "DISABLE_GOOGLE_ACCESS",
+    "purpose": "PRIVATE",
+    "stackType": "IPV4_ONLY"
+  }

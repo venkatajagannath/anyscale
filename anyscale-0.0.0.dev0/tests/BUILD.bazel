@@ -1,0 +1,78 @@
+load("@py_deps//:requirements.bzl", "requirement")
+load("@rules_python//python:defs.bzl", "py_library")
+load("//bazel:python.bzl", "py_tests_with_shim")
+
+filegroup(
+    name = "gcp_responses",
+    srcs = glob([
+        "gcp_responses/*.json",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+py_library(
+    name = "test_helper_files",
+    testonly = True,
+    srcs = ["conftest.py"],
+    data = [
+        "clientLibraryConfig-aws-pool.json",
+        ":cloud_formation_template.txt",
+        ":cloud_formation_template_oa.txt",
+        ":gcp_responses",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+py_library(
+    name = "test_connect_library",
+    srcs = ["test_connect.py"],
+)
+
+ray_tests = [
+    "test_connect.py",
+    "test_snapshot_util.py",
+]
+
+py_tests_with_shim(
+    size = "medium",
+    srcs = glob(
+        ["test_*.py"],
+        exclude = ray_tests,
+    ),
+    deps = [
+        ":test_connect_library",
+        ":test_helper_files",
+        "//:product_backend",
+        "//frontend/cli:anyscale",
+        requirement("moto"),
+        requirement("click"),
+        requirement("pytest"),
+        requirement("tzlocal"),
+        requirement("humanize"),
+        requirement("smart_open"),
+        requirement("google-cloud-resource-manager"),
+        requirement("google-cloud-storage"),
+        requirement("google-cloud-compute"),
+        requirement("google-cloud-filestore"),
+        requirement("freezegun"),
+        requirement("google-cloud-redis"),
+    ],
+)
+
+py_tests_with_shim(
+    size = "medium",
+    srcs = glob(
+        ray_tests,
+    ),
+    deps = [
+        ":test_connect_library",
+        ":test_helper_files",
+        "//:product_backend",
+        "//frontend/cli:anyscale",
+        requirement("click"),
+        requirement("pytest"),
+        requirement("ray"),
+        requirement("tzlocal"),
+        requirement("humanize"),
+    ],
+)

@@ -1,0 +1,4 @@
+name: my-service
+applications:
+  - import_path: main:app
+bad_option: hello

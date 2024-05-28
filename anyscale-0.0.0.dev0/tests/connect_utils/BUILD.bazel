@@ -1,0 +1,33 @@
+load("@py_deps//:requirements.bzl", "requirement")
+load("//bazel:python.bzl", "py_tests_with_shim")
+
+# test_start_interactive_session doesn't directly import Ray
+# but is called in the context of Ray client, so it should be
+# run with Ray installed.
+ray_tests = ["test_start_interactive_session.py"]
+
+py_tests_with_shim(
+    size = "small",
+    srcs = glob(
+        [
+            "test_*.py",
+        ],
+        exclude = ray_tests,
+    ),
+    deps = [
+        "//frontend/cli:anyscale",
+        requirement("pytest"),
+        requirement("click"),
+    ],
+)
+
+py_tests_with_shim(
+    size = "small",
+    srcs = glob(ray_tests),
+    deps = [
+        "//frontend/cli:anyscale",
+        requirement("pytest"),
+        requirement("click"),
+        requirement("ray"),
+    ],
+)

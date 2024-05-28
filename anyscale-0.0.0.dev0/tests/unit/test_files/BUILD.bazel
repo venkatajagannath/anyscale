@@ -1,0 +1,55 @@
+filegroup(
+    name = "gcp_responses",
+    srcs = glob([
+        "gcp_responses/*.json",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "containerfiles",
+    srcs = glob([
+        "containerfiles/*",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "requirements_files",
+    srcs = glob([
+        "requirements_files/*",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "compute_config_files",
+    srcs = glob([
+        "compute_config_files/*",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "job_config_files",
+    srcs = glob([
+        "job_config_files/*",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "service_config_files",
+    srcs = glob([
+        "service_config_files/*",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "working_dirs",
+    srcs = glob([
+        "working_dirs/**/*",
+    ]),
+    visibility = ["//visibility:public"],
+)

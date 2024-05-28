@@ -1,0 +1,25 @@
+{
+  "name": "projects/anyscale-bridge-deadbeef/locations/us-central1/instances/zonal-filestore",
+  "state": "READY",
+  "createTime": "2023-03-16T02:06:15.009967969Z",
+  "tier": "BASIC_SSD",
+  "fileShares": [
+    {
+      "name": "test",
+      "capacityGb": "2560"
+    }
+  ],
+  "networks": [
+    {
+      "network": "vpc_one",
+      "modes": [
+        "MODE_IPV4"
+      ],
+      "reservedIpRange": "172.27.155.248/29",
+      "ipAddresses": [
+        "172.27.155.250"
+      ],
+      "connectMode": "DIRECT_PEERING"
+    }
+  ]
+}

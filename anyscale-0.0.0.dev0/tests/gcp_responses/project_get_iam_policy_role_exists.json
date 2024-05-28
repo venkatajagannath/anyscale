@@ -1,0 +1,54 @@
+{
+    "version": 1,
+    "etag": "BwWWja0YfJA=",
+    "bindings": [
+      {
+        "role": "roles/compute.serviceAgent",
+        "members": [
+          "serviceAccount:service-112233445566@compute-system.iam.gserviceaccount.com"
+        ]
+      },
+      {
+        "role": "roles/container.serviceAgent",
+        "members": [
+          "serviceAccount:service-112233445566@container-engine-robot.iam.gserviceaccount.com"
+        ]
+      },
+      {
+        "role": "roles/containerregistry.ServiceAgent",
+        "members": [
+          "serviceAccount:service-112233445566@containerregistry.iam.gserviceaccount.com"
+        ]
+      },
+      {
+        "role": "roles/iam.securityAdmin",
+        "members": [
+          "user:test@anyscale.com"
+        ]
+      },
+      {
+        "role": "roles/editor",
+        "members": [
+          "serviceAccount:112233445566-compute@developer.gserviceaccount.com"
+        ]
+      },
+      {
+        "role": "roles/file.serviceAgent",
+        "members": [
+          "serviceAccount:service-112233445566@cloud-filer.iam.gserviceaccount.com"
+        ]
+      },
+      {
+        "role": "roles/owner",
+        "members": [
+          "user:test@anyscale.com"
+        ]
+      },
+      {
+        "role": "roles/pubsub.serviceAgent",
+        "members": [
+          "serviceAccount:service-112233445566@gcp-sa-pubsub.iam.gserviceaccount.com"
+        ]
+      }
+    ]
+  }

@@ -1,0 +1,24 @@
+{
+    "id": "5279155421465211056",
+    "name": "mock-deployment",
+    "operation": {
+      "kind": "deploymentmanager#operation",
+      "id": "0",
+      "name": "operation-1680821855398-5f8b2d59f294b-6f1084a5-9720e39d",
+      "operationType": "insert",
+      "targetLink": "https://www.googleapis.com/deploymentmanager/v2/projects/mock-project/global/deployments/mock-deployment",
+      "targetId": "5279155421465211056",
+      "status": "DONE",
+      "user": "abc@abc.com",
+      "progress": 100,
+      "insertTime": "1969-12-31T16:00:00.000-08:00",
+      "startTime": "2023-04-06T15:57:35.674-07:00",
+      "endTime": "2023-04-06T16:09:06.700-07:00",
+      "selfLink": "https://www.googleapis.com/deploymentmanager/v2/projects/0/global/operations/operation-1680821855398-5f8b2d59f294b-6f1084a5-9720e39d"
+    },
+    "fingerprint": "jEfMh6HgAvXCF5WjUcubVA==",
+    "manifest": "https://www.googleapis.com/deploymentmanager/v2/projects/mock-project/global/deployments/mock-deployment/manifests/manifest-1680821855535",
+    "insertTime": "2023-04-06T15:57:35.503-07:00",
+    "updateTime": "2023-04-06T16:09:06.693-07:00",
+    "selfLink": "https://www.googleapis.com/deploymentmanager/v2/projects/mock-project/global/deployments/mock-deployment"
+  }

@@ -1,0 +1,28 @@
+load("@py_deps//:requirements.bzl", "requirement")
+load("@rules_python//python:defs.bzl", "py_library")
+load("//bazel:python.bzl", "py_tests_with_shim")
+
+py_library(
+    name = "test_helper_files",
+    testonly = True,
+    srcs = glob(["*.py"]),
+)
+
+py_tests_with_shim(
+    size = "medium",
+    srcs = glob(["test_*.py"]),
+    deps = [
+        ":test_helper_files",
+        "//frontend/cli:anyscale",
+        "//frontend/cli/tests:test_helper_files",
+        requirement("asynctest"),
+        requirement("moto"),
+        requirement("pytest"),
+        requirement("psutil"),
+        requirement("google-cloud-storage"),
+        requirement("humanize"),
+        requirement("tzlocal"),
+        requirement("smart_open"),
+        requirement("mypy-boto3-cloudformation"),
+    ],
+)

@@ -1,0 +1,11 @@
+{
+    "name": "redis-mock-deployment",
+    "type": "gcp-types/redis-v1:projects.locations.instances",
+    "manifest": "https://www.googleapis.com/deploymentmanager/v2/projects/mock-project/global/deployments/mock-deployment/manifests/manifest-1695749710942",
+    "url": "https://redis.googleapis.com/v1/projects/mock-project/locations/us-west1/instances/redis-mock-deployment",
+    "id": "1528299480468596925",
+    "properties": "authorizedNetwork: projects/mock-project/global/networks/$(ref.vpc-mock-deployment.name)\ndisplayName: redis-mock-deployment\ninstanceId: redis-mock-deployment\nmemorySizeGb: 5\nparent: projects/mock-project/locations/us-west1\nreadReplicasMode: READ_REPLICAS_ENABLED\nredisConfigs:\n  maxmemory-policy: allkeys-lru\nredisVersion: REDIS_7_0\nreplicaCount: 1\ntier: STANDARD_HA\n",
+    "finalProperties": "authorizedNetwork: projects/mock-project/global/networks/vpc-mock-deployment\ndisplayName: redis-mock-deployment\ninstanceId: redis-mock-deployment\nmemorySizeGb: 5\nparent: projects/mock-project/locations/us-west1\nreadReplicasMode: READ_REPLICAS_ENABLED\nredisConfigs:\n  maxmemory-policy: allkeys-lru\nredisVersion: REDIS_7_0\nreplicaCount: 1\ntier: STANDARD_HA\n",
+    "insertTime": "2023-09-26T10:35:14.646-07:00",
+    "updateTime": "2023-09-26T10:41:52.771-07:00"
+  }

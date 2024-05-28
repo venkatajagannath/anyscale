@@ -1,0 +1,25 @@
+load("@py_deps//:requirements.bzl", "requirement")
+load("@rules_python//python:defs.bzl", "py_library")
+load("//bazel:python.bzl", "py_tests_with_shim")
+
+py_library(
+    name = "test_helper_files",
+    testonly = True,
+    srcs = glob(["*.py"]),
+)
+
+py_tests_with_shim(
+    size = "small",
+    srcs = glob(
+        [
+            "test_*.py",
+        ],
+    ),
+    deps = [
+        ":test_helper_files",
+        "//frontend/cli:anyscale",
+        "//frontend/cli/tests:test_helper_files",
+        requirement("asynctest"),
+        requirement("pytest"),
+    ],
+)

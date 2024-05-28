@@ -1,0 +1,14 @@
+{
+    "kind": "deploymentmanager#operation",
+    "id": "8016446600151052217",
+    "name": "operation-1682542934171-5fa438de9208e-c92993a6-9ad26173",
+    "operationType": "delete",
+    "targetLink": "https://www.googleapis.com/deploymentmanager/v2/projects/mock-project/global/deployments/mock-deployment",
+    "targetId": "5043427717683622378",
+    "status": "RUNNING",
+    "user": "test@anyscale.com",
+    "progress": 0,
+    "insertTime": "2023-04-26T14:02:14.246-07:00",
+    "startTime": "2023-04-26T14:02:14.260-07:00",
+    "selfLink": "https://www.googleapis.com/deploymentmanager/v2/projects/mock-project/global/operations/operation-1682542934171-5fa438de9208e-c92993a6-9ad26173"
+  }

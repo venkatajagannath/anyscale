@@ -1,0 +1,68 @@
+{
+  "services": [
+    {
+      "name": "projects/235101865673/services/compute.googleapis.com",
+      "state": "ENABLED",
+      "parent": "projects/235101865673",
+      "config": {
+        "name": "compute.googleapis.com"
+      }
+    },
+    {
+      "name": "projects/235101865673/services/file.googleapis.com",
+      "state": "ENABLED",
+      "parent": "projects/235101865673",
+      "config": {
+        "name": "file.googleapis.com"
+      }
+    },
+    {
+      "name": "projects/235101865673/services/storage-component.googleapis.com",
+      "state": "ENABLED",
+      "parent": "projects/235101865673",
+      "config": {
+        "name": "storage-component.googleapis.com"
+      }
+    },
+    {
+      "name": "projects/235101865673/services/storage.googleapis.com",
+      "state": "ENABLED",
+      "parent": "projects/235101865673",
+      "config": {
+        "name": "storage.googleapis.com"
+      }
+    },
+    {
+      "name": "projects/235101865673/services/deploymentmanager.googleapis.com",
+      "state": "ENABLED",
+      "parent": "projects/235101865673",
+      "config": {
+        "name": "deploymentmanager.googleapis.com"
+      }
+    },
+    {
+      "name": "projects/235101865673/services/cloudresourcemanager.googleapis.com",
+      "state": "ENABLED",
+      "parent": "projects/235101865673",
+      "config": {
+        "name": "cloudresourcemanager.googleapis.com"
+      }
+    },
+    {
+      "name": "projects/235101865673/services/certificatemanager.googleapis.com",
+      "state": "ENABLED",
+      "parent": "projects/235101865673",
+      "config": {
+        "name": "certificatemanager.googleapis.com"
+      }
+    },
+    {
+      "name": "projects/235101865673/services/redis.googleapis.com",
+      "state": "ENABLED",
+      "parent": "projects/235101865673",
+      "config": {
+        "name": "redis.googleapis.com"
+      }
+    }
+  ]
+}

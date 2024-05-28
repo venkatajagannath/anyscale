@@ -1,0 +1,35 @@
+{
+  "authorizedNetwork": "projects/dogfood-clouds/global/networks/anyscale-vpn-cloud",
+  "availableMaintenanceVersions": [
+    "20230727_00_00"
+  ],
+  "connectMode": "DIRECT_PEERING",
+  "createTime": "2023-04-20T22:17:09.005126526Z",
+  "currentLocationId": "us-central1-a",
+  "displayName": "memorystore-private-cloud",
+  "host": "10.64.138.3",
+  "locationId": "us-central1-a",
+  "maintenanceVersion": "20230508_00_00",
+  "memorySizeGb": 4,
+  "name": "projects/dogfood-clouds/locations/us-central1/instances/memorystore-private-cloud",
+  "nodes": [
+    {
+      "id": "node-0",
+      "zone": "us-central1-a"
+    }
+  ],
+  "persistenceConfig": {
+    "persistenceMode": "DISABLED"
+  },
+  "persistenceIamIdentity": "serviceAccount:service-886834174894@cloud-redis.iam.gserviceaccount.com",
+  "port": 6379,
+  "readReplicasMode": "READ_REPLICAS_DISABLED",
+  "redisVersion": "REDIS_6_X",
+  "redisConfigs": {
+    "maxmemory-policy": "allkeys-lru"
+  },
+  "reservedIpRange": "10.64.138.0/29",
+  "state": "READY",
+  "tier": "STANDARD_HA",
+  "transitEncryptionMode": "DISABLED"
+}

@@ -1,0 +1,12 @@
+{
+    "items": [
+        {
+            "network": "myvpc",
+            "purpose": "PRIVATE"
+        },
+        {
+            "network": "myvpc",
+            "purpose": "REGIONAL_MANAGED_PROXY"
+        }
+    ]
+}
