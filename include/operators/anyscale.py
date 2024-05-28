@@ -127,9 +127,9 @@ class SubmitAnyscaleJob(BaseOperator):
         self.log.info(f"Submitted Anyscale job with ID: {self.job_id}")
 
         current_status = self.get_current_status(self.job_id)
-        self.log.info(f"Current status for {self.job_id} is: {current_status}")
+        self.log.info(f"Current status for {self.job_id} is: {current_status.state}")
 
-        self.process_job_status(self.job_id, current_status)
+        self.process_job_status(self.job_id, current_status.state)
         
         return self.job_id
     
