@@ -4,6 +4,8 @@ import logging
 import asyncio
 from datetime import datetime, timedelta
 
+from anyscale.job.models import JobState
+
 from airflow.triggers.base import BaseTrigger, TriggerEvent
 from airflow.compat.functools import cached_property
 
@@ -93,7 +95,7 @@ class AnyscaleJobTrigger(BaseTrigger):
     def is_terminal_status(self, job_id):
         job_status = self.get_current_status(job_id)
         self.logger.info(f"Current job status for {job_id} is: {job_status}")
-        return job_status not in ('RUNNING', 'PENDING', 'AWAITING_CLUSTER_START', 'RESTARTING')
+        return job_status not in (JobState.STARTING, JobState.RUNNING,'RUNNING', 'PENDING', 'AWAITING_CLUSTER_START', 'RESTARTING')
 
 
 

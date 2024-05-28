@@ -7,6 +7,7 @@ from typing import List, Dict, Union, Any
 
 # Third-party imports
 import anyscale
+from anyscale.job.models import JobState
 from anyscale.compute_config.models import (
     ComputeConfig, HeadNodeConfig, MarketType, WorkerNodeGroupConfig
 )
@@ -133,11 +134,11 @@ class SubmitAnyscaleJob(BaseOperator):
         return self.job_id
     
     def process_job_status(self, job_id, current_status):
-        if current_status in ("RUNNING", "AWAITING_CLUSTER_START", "PENDING", "RESTARTING", "UPDATING"):
+        if current_status in (JobState.STARTING, JobState.RUNNING, "RUNNING", "AWAITING_CLUSTER_START", "PENDING", "RESTARTING", "UPDATING"):
             self.defer_job_polling(job_id)
-        elif current_status == "SUCCESS":
+        elif current_status == JobState.SUCCEEDED:
             self.log.info(f"Job {job_id} completed successfully.")
-        elif current_status in ("ERRORED", "BROKEN", "OUT_OF_RETRIES"):
+        elif current_status in (JobState.FAILED,"ERRORED", "BROKEN", "OUT_OF_RETRIES"):
             raise AirflowException(f"Job {job_id} failed.")
         elif current_status == "TERMINATED":
             raise AirflowException(f"Job {job_id} was cancelled.")
@@ -159,7 +160,7 @@ class SubmitAnyscaleJob(BaseOperator):
 
         current_job_id = event["job_id"]
         
-        if event["status"] in ("OUT_OF_RETRIES", "TERMINATED", "ERRORED"):
+        if event["status"] in (JobState.FAILED, "OUT_OF_RETRIES", "TERMINATED", "ERRORED"):
             self.log.info(f"Anyscale job {current_job_id} ended with status: {event['status']}")
             raise AirflowException(f"Job {current_job_id} failed with error {event['message']}")
         else:
