@@ -154,22 +154,22 @@ class AnyscaleHook(BaseHook):
     def get_service_status(self,service_name: str) -> str:
         return self.sdk.service.status(name=service_name)
     
-    def terminate_job(self, job_id: str):
+    def terminate_job(self, job_id: str, time_delay: int):
         logger.info(f"Terminating Job ID: {job_id}")
         try:
             job_id = self.sdk.job.terminate(name=job_id)
             # Simulated delay
-            time.sleep(5)
+            time.sleep(time_delay)
         except Exception as e:
             AirflowException(f"Job termination failed with error: {e}")
         return True
     
-    def terminate_service(self, service_id: str):
+    def terminate_service(self, service_id: str, time_delay: int):
         logger.info(f"Terminating Service ID: {service_id}")
         try:
             service_id = self.sdk.service.terminate(name=service_id)
             # Simulated delay
-            time.sleep(5)
+            time.sleep(time_delay)
         except Exception as e:
             AirflowException(f"Service termination failed with error: {e}")
         return True

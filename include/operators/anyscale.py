@@ -103,7 +103,7 @@ class SubmitAnyscaleJob(BaseOperator):
     
     def on_kill(self):
         if self.job_id is not None:
-            self.hook.terminate_job(self.job_id)
+            self.hook.terminate_job(self.job_id, 5)
             self.log.info("Termination request received. Submitted request to terminate the anyscale job.")
         return self.job_id
     
