@@ -1,9 +1,7 @@
 FROM quay.io/astronomer/astro-runtime:11.3.0
 
-# Switch to the root user
-USER root
-
 # Install necessary build tools
+USER root
 RUN apt-get update && apt-get install -y build-essential
 
 # Switch back to the astro user
@@ -18,10 +16,12 @@ WORKDIR /tmp/anyscale-0.0.0.dev0
 # Install build dependencies
 RUN pip install --upgrade pip setuptools wheel
 
-# Build the wheel file
+# Switch to the root user to build the wheel file
+USER root
 RUN python setup.py bdist_wheel
 
-# Install the built wheel file using pip
+# Switch back to the astro user to install the wheel file
+USER astro
 RUN pip install dist/anyscale-0.0.0.dev0-*.whl
 
 # Clean up the wheel file and build directory after installation (optional)
