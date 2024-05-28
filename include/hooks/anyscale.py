@@ -17,10 +17,91 @@ from anyscale.sdk.anyscale_client.models import *
 logger = logging.getLogger(__name__)
 
 class AnyscaleHook(BaseHook):
+
     """
     This hook handles the authentication and session management for Anyscale services.
-    It assumes authentication through an environment variable.
-    """
+
+    .. seealso::
+        For more information on how to use this hook, take a look at the guide:
+        :ref:`howto/hook:AnyscaleHook`
+
+    :param conn_id: Optional. The connection ID to use for Anyscale. Defaults to "anyscale_default".
+
+    :raises AirflowException: If the API token is missing.
+
+    .. attribute:: conn_name_attr
+        :annotation: = "conn_id"
+        Name attribute for the connection.
+
+    .. attribute:: default_conn_name
+        :annotation: = "anyscale_default"
+        Default connection name.
+
+    .. attribute:: conn_type
+        :annotation: = "anyscale"
+        Type of the connection.
+
+    .. attribute:: hook_name
+        :annotation: = "Anyscale"
+        Name of the hook.
+
+    .. method:: get_ui_field_behaviour
+        Return custom field behaviour for the connection form in the UI.
+
+    .. method:: submit_job
+        Submit a job to Anyscale.
+
+        :param config: Required. Configuration dictionary for the job.
+        :return: The job ID.
+        :rtype: str
+
+    .. method:: deploy_service
+        Deploy a service to Anyscale.
+
+        :param config: Required. Configuration dictionary for the service.
+        :param in_place: Optional. Whether to perform an in-place update. Defaults to False.
+        :param canary_percent: Optional. Canary percentage for deployment.
+        :param max_surge_percent: Optional. Maximum surge percentage for deployment.
+        :return: The service ID.
+        :rtype: str
+
+    .. method:: get_job_status
+        Fetch the status of a job.
+
+        :param job_id: Required. The ID of the job.
+        :return: The status of the job.
+        :rtype: str
+
+    .. method:: get_service_status
+        Fetch the status of a service.
+
+        :param service_name: Required. The name of the service.
+        :return: The status of the service.
+        :rtype: str
+
+    .. method:: terminate_job
+        Terminate a running job.
+
+        :param job_id: Required. The ID of the job.
+        :return: True if the termination was successful.
+        :rtype: bool
+        :raises AirflowException: If the job termination fails.
+
+    .. method:: terminate_service
+        Terminate a running service.
+
+        :param service_id: Required. The ID of the service.
+        :return: True if the termination was successful.
+        :rtype: bool
+        :raises AirflowException: If the service termination fails.
+
+    .. method:: fetch_logs
+        Fetch the logs for a job.
+
+        :param job_id: Required. The ID of the job.
+        :return: The logs of the job.
+        :rtype: str
+"""
 
     conn_name_attr = "conn_id"
     default_conn_name = "anyscale_default"

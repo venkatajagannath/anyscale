@@ -25,6 +25,32 @@ from include.triggers.anyscale import AnyscaleJobTrigger, AnyscaleServiceTrigger
 logging.basicConfig(level=logging.DEBUG)
 
 class SubmitAnyscaleJob(BaseOperator):
+
+    """
+    Submits a job to Anyscale from Apache Airflow.
+
+    This operator handles the submission and management of jobs on Anyscale. It initializes
+    with the necessary parameters to define and configure the job, and provides mechanisms
+    for job submission, status tracking, and handling job outcomes.
+
+    .. seealso::
+        For more information on how to use this operator, take a look at the guide:
+        :ref:`howto/operator:SubmitAnyscaleJobOperator`
+
+    :param conn_id: Required. The connection ID for Anyscale.
+    :param name: Required. The name of the job to be submitted.
+    :param image_uri: Required. The URI of the container image to use for the job.
+    :param compute_config: Required. The compute configuration for the job.
+    :param working_dir: Required. The working directory for the job.
+    :param entrypoint: Required. The entry point script or command for the job.
+    :param excludes: Optional. Files or directories to exclude. Defaults to None.
+    :param requirements: Optional. Python requirements for the job. Defaults to None.
+    :param env_vars: Optional. Environment variables for the job. Defaults to None.
+    :param py_modules: Optional. Python modules to include. Defaults to None.
+    :param max_retries: Optional. Maximum number of retries for the job. Defaults to 1.
+
+    :raises AirflowException: If job name or entrypoint is not provided.
+    """
     
     def __init__(self,
                  conn_id: str,
@@ -141,6 +167,41 @@ class SubmitAnyscaleJob(BaseOperator):
         return None
 
 class RolloutAnyscaleService(BaseOperator):
+
+    """
+    Rolls out a service on Anyscale from Apache Airflow.
+
+    This operator handles the deployment of services on Anyscale, including the necessary 
+    configurations and options. It ensures the service is rolled out according to the 
+    specified parameters and handles the deployment lifecycle.
+
+    .. seealso::
+        For more information on how to use this operator, take a look at the guide:
+        :ref:`howto/operator:RolloutAnyscaleServiceOperator`
+
+    :param conn_id: Required. The connection ID for Anyscale.
+    :param name: Required. The name of the service to be deployed.
+    :param image_uri: Required. The URI of the container image to use for the service.
+    :param containerfile: Optional. Path to the container file. Defaults to None.
+    :param compute_config: Optional. The compute configuration for the service. Defaults to None.
+    :param working_dir: Optional. The working directory for the service. Defaults to None.
+    :param excludes: Optional. Files or directories to exclude. Defaults to None.
+    :param requirements: Optional. Python requirements for the service. Defaults to None.
+    :param env_vars: Optional. Environment variables for the service. Defaults to None.
+    :param py_modules: Optional. Python modules to include. Defaults to None.
+    :param applications: Required. List of applications to deploy.
+    :param query_auth_token_enabled: Optional. Flag to enable query authentication token. Defaults to False.
+    :param http_options: Optional. HTTP options for the service. Defaults to None.
+    :param grpc_options: Optional. gRPC options for the service. Defaults to None.
+    :param logging_config: Optional. Logging configuration for the service. Defaults to None.
+    :param ray_gcs_external_storage_config: Optional. Ray GCS external storage configuration. Defaults to None.
+    :param in_place: Optional. Flag for in-place updates. Defaults to False.
+    :param canary_percent: Optional. Percentage of canary deployment. Defaults to None.
+    :param max_surge_percent: Optional. Maximum percentage of surge during deployment. Defaults to None.
+
+    :raises ValueError: If service name or applications list is not provided.
+    :raises AirflowException: If the SDK is not available or the service deployment fails.
+    """
 
     def __init__(self,
              conn_id: str,

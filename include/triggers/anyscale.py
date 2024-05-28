@@ -10,6 +10,27 @@ from airflow.compat.functools import cached_property
 from include.hooks.anyscale import AnyscaleHook
 
 class AnyscaleJobTrigger(BaseTrigger):
+
+    """
+    Triggers and monitors the status of a job submitted to Anyscale.
+
+    This trigger periodically checks the status of a submitted job on Anyscale and 
+    yields events based on the job's status. It handles timeouts and errors during 
+    the polling process.
+
+    .. seealso::
+        For more information on how to use this trigger, take a look at the guide:
+        :ref:`howto/trigger:AnyscaleJobTrigger`
+
+    :param conn_id: Required. The connection ID for Anyscale.
+    :param job_id: Required. The ID of the job to monitor.
+    :param job_start_time: Required. The start time of the job.
+    :param poll_interval: Optional. Interval in seconds between status checks. Defaults to 60 seconds.
+    :param timeout: Optional. Timeout in seconds for job completion. Defaults to 3600 seconds (1 hour).
+
+    :raises AirflowException: If no job_id is provided or an error occurs during polling.
+    """
+
     def __init__(self, conn_id, job_id, job_start_time, poll_interval=60, timeout=3600):  # Default timeout set to one hour
         super().__init__()
         self.conn_id = conn_id
@@ -77,6 +98,27 @@ class AnyscaleJobTrigger(BaseTrigger):
 
 
 class AnyscaleServiceTrigger(BaseTrigger):
+
+    """
+    Triggers and monitors the status of a service deployment on Anyscale.
+
+    This trigger periodically checks the status of a service deployment on Anyscale
+    and yields events based on the service's status. It handles timeouts and errors 
+    during the monitoring process.
+
+    .. seealso::
+        For more information on how to use this trigger, take a look at the guide:
+        :ref:`howto/trigger:AnyscaleServiceTrigger`
+
+    :param conn_id: Required. The connection ID for Anyscale.
+    :param service_id: Required. The ID of the service to monitor.
+    :param expected_state: Required. The expected final state of the service.
+    :param poll_interval: Optional. Interval in seconds between status checks. Defaults to 60 seconds.
+    :param timeout: Optional. Timeout in seconds for service to reach the expected state. Defaults to 600 seconds (10 minutes).
+
+    :raises AirflowException: If no service_id is provided or an error occurs during monitoring.
+    """
+
     def __init__(self,
                  conn_id: str,
                  service_id: str,
