@@ -24,17 +24,6 @@ RUN python setup.py bdist_wheel
 USER astro
 RUN pip install dist/anyscale-0.0.0.dev0-*.whl
 
-# Copy the test files into the Docker container
-COPY tests /usr/local/airflow/tests
-
-# Ensure the tests directory is writable
-RUN mkdir -p /usr/local/airflow/tests/.pytest_cache && chmod -R 777 /usr/local/airflow/tests
-
 # Clean up the wheel file and build directory after installation (optional)
+USER root
 RUN rm -rf /tmp/anyscale-0.0.0.dev0
-
-# Set the working directory to where the tests are located
-WORKDIR /usr/local/airflow/tests
-
-# Run pytest (adjust the path to your test files if necessary)
-CMD ["pytest", "--disable-warnings"]
