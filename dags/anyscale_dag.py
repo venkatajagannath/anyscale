@@ -23,7 +23,8 @@ ANYSCALE_CONN_ID = "anyscale_conn"
 
 # Constants
 BUCKET_NAME = 'anyscale-production-data-cld-g7m5cn8nnhkydikcjc6lj4ekye'
-FILE_PATH = '/usr/local/airflow/dags/ray_scripts'
+FOLDER_PATH = '/usr/local/airflow/dags/ray_scripts'
+FILE_PATH = '/usr/local/airflow/dags/ray_scripts/script.py'
 AWS_CONN_ID = 'aws_conn'
 
 dag = DAG(
@@ -56,7 +57,7 @@ submit_anyscale_job = SubmitAnyscaleJob(
     name = 'AstroJob',
     image_uri = 'anyscaleray2100-py39', 
     compute_config = 'my-compute-config:1',
-    working_dir = FILE_PATH,
+    working_dir = FOLDER_PATH,
     entrypoint= 'python script.py',
     requirements = ["requests","pandas","numpy","torch"],
     max_retries = 1,
