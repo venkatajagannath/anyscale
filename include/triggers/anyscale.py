@@ -53,7 +53,7 @@ class AnyscaleJobTrigger(BaseTrigger):
         return ("include.triggers.anyscale.AnyscaleJobTrigger", {
             "conn_id": self.conn_id,
             "job_id": self.job_id,
-            "job_start_time": self.job_start_time.isoformat(),
+            "job_start_time": self.job_start_time,
             "poll_interval": self.poll_interval,
             "timeout": self.timeout
         })
@@ -73,7 +73,7 @@ class AnyscaleJobTrigger(BaseTrigger):
                     return
                 await asyncio.sleep(self.poll_interval)
             # Once out of the loop, the job has reached a terminal status
-            job_status = self.get_current_status(self.job_id)
+            job_status = self.get_current_status(self.job_id).state
             self.logger.info(f"Current status of the job is {job_status}")
             
             yield TriggerEvent({
@@ -94,7 +94,7 @@ class AnyscaleJobTrigger(BaseTrigger):
 
     def is_terminal_status(self, job_id):
         job_status = self.get_current_status(job_id)
-        self.logger.info(f"Current job status for {job_id} is: {job_status}")
+        self.logger.info(f"Current job status for {job_id} is: {job_status.state}")
         return job_status.state not in (JobState.STARTING, JobState.RUNNING,'RUNNING', 'PENDING', 'AWAITING_CLUSTER_START', 'RESTARTING')
 
 
