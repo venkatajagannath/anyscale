@@ -111,23 +111,23 @@ class AnyscaleServiceTrigger(BaseTrigger):
         :ref:`howto/trigger:AnyscaleServiceTrigger`
 
     :param conn_id: Required. The connection ID for Anyscale.
-    :param service_id: Required. The ID of the service to monitor.
+    :param service_name: Required. The ID of the service to monitor.
     :param expected_state: Required. The expected final state of the service.
     :param poll_interval: Optional. Interval in seconds between status checks. Defaults to 60 seconds.
     :param timeout: Optional. Timeout in seconds for service to reach the expected state. Defaults to 600 seconds (10 minutes).
 
-    :raises AirflowException: If no service_id is provided or an error occurs during monitoring.
+    :raises AirflowException: If no service_name is provided or an error occurs during monitoring.
     """
 
     def __init__(self,
                  conn_id: str,
-                 service_id: str,
+                 service_name: str,
                  expected_state: str,
                  poll_interval: int = 60,
                  timeout: int = 600):
         super().__init__()
         self.conn_id = conn_id
-        self.service_id = service_id
+        self.service_name = service_name
         self.expected_state = expected_state
         self.poll_interval = poll_interval
         self.timeout = timeout
@@ -144,7 +144,7 @@ class AnyscaleServiceTrigger(BaseTrigger):
     def serialize(self):
         return ("include.triggers.anyscale.AnyscaleServiceTrigger", {
             "conn_id": self.conn_id,
-            "service_id": self.service_id,
+            "service_name": self.service_name,
             "expected_state": self.expected_state,
             "poll_interval": self.poll_interval,
             "timeout": self.timeout
@@ -152,47 +152,47 @@ class AnyscaleServiceTrigger(BaseTrigger):
 
     async def run(self):
         
-        if not self.service_id:
-            self.logger.info("No service_id provided")
-            yield TriggerEvent({"status": "error", "message": "No service_id provided to async trigger", "service_id": self.service_id})
+        if not self.service_name:
+            self.logger.info("No service_name provided")
+            yield TriggerEvent({"status": "error", "message": "No service_name provided to async trigger", "service_name": self.service_name})
 
         try:
-            self.logger.info(f"Monitoring service {self.service_id} every {self.poll_interval} seconds to reach {self.expected_state}")
+            self.logger.info(f"Monitoring service {self.service_name} every {self.poll_interval} seconds to reach {self.expected_state}")
 
-            while self.check_current_status(self.service_id):
+            while self.check_current_status(self.service_name):
                 if time.time() > self.end_time:
                     yield TriggerEvent({
                         "status": "timeout",
-                        "message": f"Service {self.service_id} did not reach {self.expected_state} within the timeout period.",
-                        "service_id": self.service_id
+                        "message": f"Service {self.service_name} did not reach {self.expected_state} within the timeout period.",
+                        "service_name": self.service_name
                     })
                     return
                 
                 await asyncio.sleep(self.poll_interval)
 
-            current_state = self.get_current_status(self.service_id)
+            current_state = self.get_current_status(self.service_name)
 
             if current_state == 'RUNNING':
                 yield TriggerEvent({"status": "success",
                                     "message":"Service deployment succeeded",
-                                    "service_id": self.service_id})
+                                    "service_name": self.service_name})
                 return
-            elif self.expected_state != current_state and not self.check_current_status(self.service_id):
+            elif self.expected_state != current_state and not self.check_current_status(self.service_name):
                 yield TriggerEvent({
                     "status": "failed",
-                    "message": f"Service {self.service_id} entered an unexpected state: {current_state}",
-                    "service_id": self.service_id
+                    "message": f"Service {self.service_name} entered an unexpected state: {current_state}",
+                    "service_name": self.service_name
                 })
                 return
 
         except Exception as e:
             self.logger.error("An error occurred during monitoring:", exc_info=True)
-            yield TriggerEvent({"status": "error", "message": str(e),"service_id": self.service_id})
+            yield TriggerEvent({"status": "error", "message": str(e),"service_name": self.service_name})
     
-    def get_current_status(self, service_id: str):
-        return self.hook.get_service_status(service_id)
+    def get_current_status(self, service_name: str):
+        return self.hook.get_service_status(service_name)
         
-    def check_current_status(self, service_id: str) -> bool:
-        job_status = self.get_current_status(service_id)
-        self.logger.info(f"Current job status for {service_id} is: {job_status}")
+    def check_current_status(self, service_name: str) -> bool:
+        job_status = self.get_current_status(service_name)
+        self.logger.info(f"Current job status for {service_name} is: {job_status}")
         return job_status in ('STARTING','UPDATING','ROLLING_OUT')

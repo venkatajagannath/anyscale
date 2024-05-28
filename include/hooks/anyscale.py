@@ -149,7 +149,7 @@ class AnyscaleHook(BaseHook):
 
     def get_job_status(self, job_id: str) -> str:
         logger.info("Fetching job status for Job name: {}".format(job_id))
-        return self.sdk.job.status(name=job_id)
+        return self.sdk.job.status(job_id=job_id)
     
     def get_service_status(self,service_name: str) -> str:
         return self.sdk.service.status(name=service_name)
