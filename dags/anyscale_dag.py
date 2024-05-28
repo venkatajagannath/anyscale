@@ -35,8 +35,6 @@ dag = DAG(
     catchup=False,
 )
 
-
-
 # Extract the filename from the file path for S3 key construction
 filename = os.path.basename(FILE_PATH)
 s3_key = f'scripts/{filename}'
