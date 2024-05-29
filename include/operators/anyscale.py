@@ -11,7 +11,7 @@ from anyscale.job.models import JobState
 from anyscale.compute_config.models import (
     ComputeConfig, HeadNodeConfig, MarketType, WorkerNodeGroupConfig
 )
-from anyscale.service.models import ServiceConfig, RayGCSExternalStorageConfig
+from anyscale.service.models import ServiceConfig, RayGCSExternalStorageConfig, ServiceState
 
 # Airflow imports
 from airflow.compat.functools import cached_property
@@ -276,7 +276,7 @@ class RolloutAnyscaleService(BaseOperator):
 
         self.defer(trigger=AnyscaleServiceTrigger(conn_id = self.conn_id,
                                         service_id = self.service_params['name'],
-                                        expected_state = 'RUNNING',
+                                        expected_state = ServiceState.RUNNING,
                                         poll_interval= 60,
                                         timeout= 600),
             method_name="execute_complete")
@@ -289,7 +289,7 @@ class RolloutAnyscaleService(BaseOperator):
         self.log.info(f"Execution completed...")
         service_id = event["service_id"]
         
-        if event["status"] == 'failed':
+        if event["status"] in (ServiceState.SYSTEM_FAILURE):
             self.log.info(f"Anyscale service deployment {service_id} ended with status : {event['status']}")
             raise AirflowException(f"Job {service_id} failed with error {event['message']}")
         else:

@@ -5,6 +5,7 @@ import asyncio
 from datetime import datetime, timedelta
 
 from anyscale.job.models import JobState
+from anyscale.service.models import ServiceState
 
 from airflow.triggers.base import BaseTrigger, TriggerEvent
 from airflow.compat.functools import cached_property
@@ -160,7 +161,7 @@ class AnyscaleServiceTrigger(BaseTrigger):
         
         if not self.service_name:
             self.logger.info("No service_name provided")
-            yield TriggerEvent({"status": "error", "message": "No service_name provided to async trigger", "service_name": self.service_name})
+            yield TriggerEvent({"status": ServiceState.SYSTEM_FAILURE, "message": "No service_name provided to async trigger", "service_name": self.service_name})
 
         try:
             self.logger.info(f"Monitoring service {self.service_name} every {self.poll_interval} seconds to reach {self.expected_state}")
@@ -168,7 +169,7 @@ class AnyscaleServiceTrigger(BaseTrigger):
             while self.check_current_status(self.service_name):
                 if time.time() > self.end_time:
                     yield TriggerEvent({
-                        "status": "timeout",
+                        "status": ServiceState.UNKNOWN,
                         "message": f"Service {self.service_name} did not reach {self.expected_state} within the timeout period.",
                         "service_name": self.service_name
                     })
@@ -178,14 +179,14 @@ class AnyscaleServiceTrigger(BaseTrigger):
 
             current_state = self.get_current_status(self.service_name)
 
-            if current_state == 'RUNNING':
-                yield TriggerEvent({"status": "success",
+            if current_state == ServiceState.RUNNING:
+                yield TriggerEvent({"status": ServiceState.RUNNING,
                                     "message":"Service deployment succeeded",
                                     "service_name": self.service_name})
                 return
             elif self.expected_state != current_state and not self.check_current_status(self.service_name):
                 yield TriggerEvent({
-                    "status": "failed",
+                    "status": ServiceState.SYSTEM_FAILURE,
                     "message": f"Service {self.service_name} entered an unexpected state: {current_state}",
                     "service_name": self.service_name
                 })
@@ -193,7 +194,7 @@ class AnyscaleServiceTrigger(BaseTrigger):
 
         except Exception as e:
             self.logger.error("An error occurred during monitoring:", exc_info=True)
-            yield TriggerEvent({"status": "error", "message": str(e),"service_name": self.service_name})
+            yield TriggerEvent({"status": ServiceState.SYSTEM_FAILURE, "message": str(e),"service_name": self.service_name})
     
     def get_current_status(self, service_name: str):
         return self.hook.get_service_status(service_name)
@@ -201,4 +202,4 @@ class AnyscaleServiceTrigger(BaseTrigger):
     def check_current_status(self, service_name: str) -> bool:
         job_status = self.get_current_status(service_name)
         self.logger.info(f"Current job status for {service_name} is: {job_status}")
-        return job_status in ('STARTING','UPDATING','ROLLING_OUT')
+        return job_status in (ServiceState.STARTING,ServiceState.UPDATING,ServiceState.ROLLING_OUT)
