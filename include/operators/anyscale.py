@@ -134,14 +134,12 @@ class SubmitAnyscaleJob(BaseOperator):
         return self.job_id
     
     def process_job_status(self, job_id, current_status):
-        if current_status in (JobState.STARTING, JobState.RUNNING, "RUNNING", "AWAITING_CLUSTER_START", "PENDING", "RESTARTING", "UPDATING"):
+        if current_status in (JobState.STARTING, JobState.RUNNING):
             self.defer_job_polling(job_id)
         elif current_status == JobState.SUCCEEDED:
             self.log.info(f"Job {job_id} completed successfully.")
-        elif current_status in (JobState.FAILED,"ERRORED", "BROKEN", "OUT_OF_RETRIES"):
+        elif current_status == JobState.FAILED:
             raise AirflowException(f"Job {job_id} failed.")
-        elif current_status == "TERMINATED":
-            raise AirflowException(f"Job {job_id} was cancelled.")
         else:
             raise Exception(f"Unexpected state `{current_status}` for job_id `{job_id}`.")
     
@@ -160,7 +158,7 @@ class SubmitAnyscaleJob(BaseOperator):
 
         current_job_id = event["job_id"]
         
-        if event["status"] in (JobState.FAILED, "OUT_OF_RETRIES", "TERMINATED", "ERRORED"):
+        if event["status"] == JobState.FAILED:
             self.log.info(f"Anyscale job {current_job_id} ended with status: {event['status']}")
             raise AirflowException(f"Job {current_job_id} failed with error {event['message']}")
         else:
