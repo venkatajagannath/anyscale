@@ -175,7 +175,6 @@ class AnyscaleHook(BaseHook):
         return True
     
     def fetch_logs(self, job_id: str):
-        status = self.get_job_status(job_id = job_id)
-        return self.sdk.job.logs(job_id=job_id, run=status.runs[0].name)
+        return self.sdk.job.logs(job_id=job_id)
 
     
