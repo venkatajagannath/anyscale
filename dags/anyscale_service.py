@@ -40,7 +40,7 @@ deploy_anyscale_service = RolloutAnyscaleService(
         {"import_path": "sentiment_analysis.app:model"}
     ],
     in_place=True,
-    canary_percent= 50,
+    canary_percent= None,
     dag=dag
 )
 
