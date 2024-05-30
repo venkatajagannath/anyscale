@@ -39,6 +39,7 @@ deploy_anyscale_service = RolloutAnyscaleService(
     applications = [
         {"import_path": "sentiment_analysis.app:model"}
     ],
+    requirements = ["transformers"],
     in_place=False,
     canary_percent= None,
     dag=dag
