@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 import os
 # Assuming these hooks and operators are custom or provided by a plugin
-from include.operators.anyscale import SubmitAnyscaleJob
+from anyscale_provider.operators.anyscale import SubmitAnyscaleJob
 
 from airflow.models.connection import Connection
 from airflow.providers.amazon.aws.transfers.local_to_s3 import LocalFilesystemToS3Operator

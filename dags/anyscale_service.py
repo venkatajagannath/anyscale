@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 import os
 
-from include.operators.anyscale import RolloutAnyscaleService
+from anyscale_provider.operators.anyscale import RolloutAnyscaleService
 
 from airflow.models.connection import Connection
 from airflow.utils.dates import days_ago
