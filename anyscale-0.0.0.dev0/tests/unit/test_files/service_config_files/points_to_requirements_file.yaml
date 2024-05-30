@@ -1,3 +1,0 @@
-applications:
-  - import_path: main:app
-requirements: some_requirements_file.txt
