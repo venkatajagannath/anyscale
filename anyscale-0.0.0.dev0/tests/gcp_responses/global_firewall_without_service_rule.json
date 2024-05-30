@@ -1,0 +1,156 @@
+{
+  "kind": "compute#firewallPolicy",
+  "id": "6407214870610",
+  "creationTimestamp": "2023-11-21T16:13:49.743-08:00",
+  "name": "firewall-policy-cld-id",
+  "description": "firewall policy for Anyscale cloud ",
+  "rules": [
+    {
+      "kind": "compute#firewallPolicyRule",
+      "description": "",
+      "priority": 1001,
+      "match": {
+        "srcIpRanges": [
+          "10.0.0.0/20"
+        ],
+        "layer4Configs": [
+          {
+            "ipProtocol": "all"
+          }
+        ]
+      },
+      "action": "allow",
+      "direction": "INGRESS",
+      "enableLogging": false,
+      "ruleTupleCount": 2
+    },
+    {
+      "kind": "compute#firewallPolicyRule",
+      "description": "",
+      "priority": 1002,
+      "match": {
+        "srcIpRanges": [
+          "0.0.0.0/0"
+        ],
+        "layer4Configs": [
+          {
+            "ipProtocol": "tcp",
+            "ports": [
+              "22",
+              "443"
+            ]
+          }
+        ]
+      },
+      "action": "allow",
+      "direction": "INGRESS",
+      "enableLogging": false,
+      "ruleTupleCount": 4
+    },
+    {
+      "kind": "compute#firewallPolicyRule",
+      "description": "internal communication",
+      "priority": 1003,
+      "match": {
+        "srcIpRanges": [
+          "10.17.0.0/20"
+        ],
+        "layer4Configs": [
+          {
+            "ipProtocol": "all"
+          }
+        ]
+      },
+      "action": "allow",
+      "direction": "INGRESS",
+      "enableLogging": false,
+      "ruleTupleCount": 5
+    },
+    {
+      "kind": "compute#firewallPolicyRule",
+      "description": "default egress rule",
+      "priority": 2147483644,
+      "match": {
+        "destIpRanges": [
+          "::/0"
+        ],
+        "layer4Configs": [
+          {
+            "ipProtocol": "all"
+          }
+        ]
+      },
+      "action": "goto_next",
+      "direction": "EGRESS",
+      "enableLogging": false,
+      "ruleTupleCount": 2
+    },
+    {
+      "kind": "compute#firewallPolicyRule",
+      "description": "default ingress rule",
+      "priority": 2147483645,
+      "match": {
+        "srcIpRanges": [
+          "::/0"
+        ],
+        "layer4Configs": [
+          {
+            "ipProtocol": "all"
+          }
+        ]
+      },
+      "action": "goto_next",
+      "direction": "INGRESS",
+      "enableLogging": false,
+      "ruleTupleCount": 2
+    },
+    {
+      "kind": "compute#firewallPolicyRule",
+      "description": "default egress rule",
+      "priority": 2147483646,
+      "match": {
+        "destIpRanges": [
+          "0.0.0.0/0"
+        ],
+        "layer4Configs": [
+          {
+            "ipProtocol": "all"
+          }
+        ]
+      },
+      "action": "goto_next",
+      "direction": "EGRESS",
+      "enableLogging": false,
+      "ruleTupleCount": 2
+    },
+    {
+      "kind": "compute#firewallPolicyRule",
+      "description": "default ingress rule",
+      "priority": 2147483647,
+      "match": {
+        "srcIpRanges": [
+          "0.0.0.0/0"
+        ],
+        "layer4Configs": [
+          {
+            "ipProtocol": "all"
+          }
+        ]
+      },
+      "action": "goto_next",
+      "direction": "INGRESS",
+      "enableLogging": false,
+      "ruleTupleCount": 2
+    }
+  ],
+  "fingerprint": "9OvhN7Y=",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/test-project/global/firewallPolicies/firewall-policy-cld-id",
+  "selfLinkWithId": "https://www.googleapis.com/compute/v1/projects/test-project/global/firewallPolicies/6407214872247990610",
+  "associations": [
+    {
+      "name": "association",
+      "attachmentTarget": "https://www.googleapis.com/compute/v1/projects/test-project/global/networks/vpc_one"
+    }
+  ],
+  "ruleTupleCount": 18
+}

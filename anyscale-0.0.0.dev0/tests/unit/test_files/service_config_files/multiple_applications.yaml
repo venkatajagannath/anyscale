@@ -1,0 +1,12 @@
+applications:
+  - name: app1
+    import_path: main:app1
+    runtime_env:
+      env_vars:
+        abc: def
+  - name: app2
+    import_path: main:app
+    args:
+      abc: def
+      nested:
+        key: val

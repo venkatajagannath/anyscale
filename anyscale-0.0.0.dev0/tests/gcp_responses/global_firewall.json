@@ -1,0 +1,125 @@
+{
+  "kind": "compute#firewallPolicy",
+  "id": "7069622648881580319",
+  "creationTimestamp": "2023-03-08T17:35:44.800-08:00",
+  "name": "ian-global",
+  "description": "global firewall policy",
+  "rules": [
+    {
+      "kind": "compute#firewallPolicyRule",
+      "description": "",
+      "priority": 10,
+      "match": {
+        "srcIpRanges": [
+          "0.0.0.0/0",
+          "10.0.0.0/8"
+        ],
+        "layer4Configs": [
+          {
+            "ipProtocol": "tcp"
+          },
+          {
+            "ipProtocol": "udp",
+            "ports": [
+              "10"
+            ]
+          }
+        ]
+      },
+      "action": "allow",
+      "direction": "INGRESS",
+      "enableLogging": false,
+      "ruleTupleCount": 7
+    },
+    {
+      "kind": "compute#firewallPolicyRule",
+      "description": "default egress rule",
+      "priority": 2147483644,
+      "match": {
+        "destIpRanges": [
+          "::/0"
+        ],
+        "layer4Configs": [
+          {
+            "ipProtocol": "all"
+          }
+        ]
+      },
+      "action": "goto_next",
+      "direction": "EGRESS",
+      "enableLogging": false,
+      "ruleTupleCount": 2
+    },
+    {
+      "kind": "compute#firewallPolicyRule",
+      "description": "default ingress rule",
+      "priority": 2147483645,
+      "match": {
+        "srcIpRanges": [
+          "::/0"
+        ],
+        "layer4Configs": [
+          {
+            "ipProtocol": "all"
+          }
+        ]
+      },
+      "action": "goto_next",
+      "direction": "INGRESS",
+      "enableLogging": false,
+      "ruleTupleCount": 2
+    },
+    {
+      "kind": "compute#firewallPolicyRule",
+      "description": "default egress rule",
+      "priority": 2147483646,
+      "match": {
+        "destIpRanges": [
+          "0.0.0.0/0"
+        ],
+        "layer4Configs": [
+          {
+            "ipProtocol": "all"
+          }
+        ]
+      },
+      "action": "goto_next",
+      "direction": "EGRESS",
+      "enableLogging": false,
+      "ruleTupleCount": 2
+    },
+    {
+      "kind": "compute#firewallPolicyRule",
+      "description": "default ingress rule",
+      "priority": 2147483647,
+      "match": {
+        "srcIpRanges": [
+          "0.0.0.0/0"
+        ],
+        "layer4Configs": [
+          {
+            "ipProtocol": "all"
+          }
+        ]
+      },
+      "action": "goto_next",
+      "direction": "INGRESS",
+      "enableLogging": false,
+      "ruleTupleCount": 2
+    }
+  ],
+  "fingerprint": "nCQ7nA9Or8Q=",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/anyscale-bridge-deadbeef/global/firewallPolicies/global-firewall",
+  "selfLinkWithId": "https://www.googleapis.com/compute/v1/projects/anyscale-bridge-deadbeef/global/firewallPolicies/7069622648881580319",
+  "associations": [
+    {
+      "name": "default",
+      "attachmentTarget": "https://www.googleapis.com/compute/v1/projects/anyscale-bridge-deadbeef/global/networks/default"
+    },
+    {
+      "name": "vpc_one",
+      "attachmentTarget": "https://www.googleapis.com/compute/v1/projects/anyscale-bridge-deadbeef/global/networks/vpc_one"
+    }
+  ],
+  "ruleTupleCount": 15
+}

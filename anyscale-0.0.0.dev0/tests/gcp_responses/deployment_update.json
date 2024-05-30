@@ -1,0 +1,14 @@
+{
+    "kind": "deploymentmanager#operation",
+    "id": "6578091387347281788",
+    "name": "operation-1682545043187-5fa440b9e274e-1bdea9b2-7e8aceb9",
+    "operationType": "update",
+    "targetLink": "https://www.googleapis.com/deploymentmanager/v2/projects/mock-project/global/deployments/mock-deployment",
+    "targetId": "4781953785195146167",
+    "status": "RUNNING",
+    "user": "test@anyscale.com",
+    "progress": 0,
+    "insertTime": "2023-04-26T14:37:23.412-07:00",
+    "startTime": "2023-04-26T14:37:23.456-07:00",
+    "selfLink": "https://www.googleapis.com/deploymentmanager/v2/projects/mock-project/global/operations/operation-1682545043187-5fa440b9e274e-1bdea9b2-7e8aceb9"
+  }

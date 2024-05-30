@@ -1,0 +1,113 @@
+resources:
+- name: vpc-${CLOUD_ID}
+  type: compute.v1.network
+  properties:
+    name: vpc-${CLOUD_ID}
+    autoCreateSubnetworks: False
+- name: subnet-${CLOUD_ID}
+  type: compute.v1.subnetwork
+  properties:
+    name: subnet-${CLOUD_ID}
+    ipCidrRange: ${SUBNET_CIDR}
+    region: ${REGION}
+    network: $$(ref.vpc-${CLOUD_ID}.selfLink)
+  metadata:
+    dependsOn:
+      - vpc-${CLOUD_ID}
+- name: firewall-policy-${CLOUD_ID}
+  type: gcp-types/compute-v1:networkFirewallPolicies
+  properties:
+    parentId: projects/${PROJECT_ID}/regions/${REGION}
+    name: firewall-policy-${CLOUD_ID}
+    description: "firewall policy for Anyscale cloud ${CLOUD_ID}"
+- name: filestore-${CLOUD_ID}
+  type: gcp-types/file-v1beta1:projects.locations.instances
+  properties:
+    instanceId: filestore-${CLOUD_ID}
+    parent: projects/${PROJECT_ID}/locations/${REGION}-${ZONE}
+    tier: STANDARD
+    networks:
+      - network: projects/${PROJECT_ID}/global/networks/$$(ref.vpc-${CLOUD_ID}.name)
+    fileShares:
+      - name: anyscale_vol
+        capacityGb: ${FILESHARE_CAPACITY_GB}
+    labels:
+      anyscale-cloud-id: ${CLOUD_ID_UNDERSCORE}
+  metadata:
+    dependsOn:
+      - vpc-${CLOUD_ID}
+- name: storage-bucket-${CLOUD_ID}
+  type: storage.v1.bucket
+  properties:
+    location: ${REGION}
+    storageClass: REGIONAL
+    iamConfiguration:
+      uniformBucketLevelAccess:
+        enabled: True
+      publicAccessPrevention: enforced
+    cors:
+    - origin: ["${ANYSCALE_CORS_ORIGIN}"]
+      responseHeader: ["*"]
+      # Do not depends on PUT,POST,HEAD,DELETE yet because old clouds are not migrated.
+      method: ["GET", "PUT", "POST", "HEAD", "DELETE"]
+    labels:
+      anyscale-cloud-id: ${CLOUD_ID_UNDERSCORE}
+- name: ${ANYSCALE_ACCESS_SERVICE_ACCOUNT}
+  type: iam.v1.serviceAccount
+  properties:
+    accountId: ${ANYSCALE_ACCESS_SERVICE_ACCOUNT}
+    displayName: ${CLOUD_ID} Anyscale access service account
+    projectId: ${PROJECT_ID}
+  accessControl:
+    gcpIamPolicy:
+        bindings:
+        - role: roles/iam.serviceAccountTokenCreator
+          members:
+          - serviceAccount:${ANYSCALE_ACCESS_SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com
+        - role: roles/iam.workloadIdentityUser
+          members:
+          - principalSet://iam.googleapis.com/${WORKLOAD_IDENTITY_POOL_NAME}/attribute.aws_role/arn:aws:sts::${ANYSCALE_AWS_ACCOUNT}:assumed-role/gcp_if_${ORGANIZATION_ID}
+- name: iam-policy-anyscale-access-project-${CLOUD_ID}
+  type: gcp-types/cloudresourcemanager-v1:virtual.projects.iamMemberBinding
+  properties:
+    resource: ${PROJECT_ID}
+    role: roles/owner
+    member: "serviceAccount:$$(ref.${ANYSCALE_ACCESS_SERVICE_ACCOUNT}.email)"
+  metadata:
+    dependsOn:
+      - ${ANYSCALE_ACCESS_SERVICE_ACCOUNT}
+- name: ${CLOUD_ID}
+  type: iam.v1.serviceAccount
+  properties:
+    accountId: ${CLOUD_ID}
+    displayName: ${CLOUD_ID} Cluster Node Service Account
+    projectId: ${PROJECT_ID}
+- name: iam-policy-instance-project-${CLOUD_ID}
+  type: gcp-types/cloudresourcemanager-v1:virtual.projects.iamMemberBinding
+  properties:
+    resource: ${PROJECT_ID}
+    role: roles/artifactregistry.reader
+    member: "serviceAccount:$$(ref.${CLOUD_ID}.email)"
+  metadata:
+    dependsOn:
+      - ${CLOUD_ID}
+- name: bucket-iam-anyscale-acess-${CLOUD_ID}
+  type: gcp-types/storage-v1:virtual.buckets.iamMemberBinding
+  properties:
+    bucket: $$(ref.storage-bucket-${CLOUD_ID}.name)
+    member: serviceAccount:$$(ref.${ANYSCALE_ACCESS_SERVICE_ACCOUNT}.email)
+    role: roles/storage.admin
+  metadata:
+    dependsOn:
+      - ${ANYSCALE_ACCESS_SERVICE_ACCOUNT}
+      - storage-bucket-${CLOUD_ID}
+- name: bucket-iam-${CLOUD_ID}
+  type: gcp-types/storage-v1:virtual.buckets.iamMemberBinding
+  properties:
+    bucket: $$(ref.storage-bucket-${CLOUD_ID}.name)
+    member: serviceAccount:$$(ref.${CLOUD_ID}.email)
+    role: roles/storage.admin
+  metadata:
+    dependsOn:
+      - ${CLOUD_ID}
+      - storage-bucket-${CLOUD_ID}

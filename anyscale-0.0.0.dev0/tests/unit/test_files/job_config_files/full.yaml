@@ -1,0 +1,8 @@
+name: test-name-from-file
+image_uri: docker.io/library/test:latest
+compute_config: test-compute-config
+working_dir: test-working-dir
+excludes: [test]
+requirements: [pip-install-test]
+entrypoint: python test.py
+max_retries: 5

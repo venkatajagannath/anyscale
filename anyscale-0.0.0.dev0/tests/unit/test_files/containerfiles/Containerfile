@@ -1,0 +1,2 @@
+FROM anyscale/ray:2.9.3
+RUN echo hello world

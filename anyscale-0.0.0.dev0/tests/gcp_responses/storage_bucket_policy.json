@@ -1,0 +1,38 @@
+{
+  "kind": "storage#policy",
+  "resourceId": "projects/_/buckets/example-bucket",
+  "version": 1,
+  "etag": "CAE=",
+  "bindings": [
+    {
+      "role": "roles/storage.legacyBucketOwner",
+      "members": [
+        "projectEditor:anyscale-bridge-deadbeef",
+        "projectOwner:anyscale-bridge-deadbeef",
+        "serviceAccount:anyscale-admin@anyscale-bridge-deadbeef.iam.gserviceaccount.com",
+        "serviceAccount:cld-xyz-access@anyscale-bridge-deadbeef.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/storage.legacyBucketReader",
+      "members": [
+        "projectViewer:anyscale-bridge-deadbeef"
+      ]
+    },
+    {
+      "role": "roles/storage.legacyObjectOwner",
+      "members": [
+        "projectEditor:anyscale-bridge-deadbeef",
+        "projectOwner:anyscale-bridge-deadbeef",
+        "serviceAccount:anyscale-admin@anyscale-bridge-deadbeef.iam.gserviceaccount.com",
+        "serviceAccount:cld-xyz-access@anyscale-bridge-deadbeef.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/storage.legacyObjectReader",
+      "members": [
+        "projectViewer:anyscale-bridge-deadbeef"
+      ]
+    }
+  ]
+}

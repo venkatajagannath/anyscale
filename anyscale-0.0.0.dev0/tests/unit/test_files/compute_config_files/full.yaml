@@ -1,0 +1,34 @@
+cloud: test-cloud-from-file
+zones:
+  - zone1
+  - zone2
+enable_cross_zone_scaling: true
+max_resources:
+    CPU: 10
+    GPU: 1
+head_node:
+  instance_type: head-node-instance-type
+  resources:
+    CPU: 1
+  advanced_instance_config:
+    head: config
+worker_nodes:
+  - name: worker-group-1
+    instance_type: worker-group-1-instance-type
+    resources:
+      CPU: 2
+    min_nodes: 2
+    max_nodes: 4
+    market_type: SPOT
+    advanced_instance_config:
+      worker1: config
+  - name: worker-group-2
+    instance_type: worker-group-2-instance-type
+    resources:
+      CPU: 1
+      GPU: 1
+    min_nodes: 0
+    max_nodes: 1
+    market_type: PREFER_SPOT
+    advanced_instance_config:
+      worker2: config

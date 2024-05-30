@@ -1,0 +1,32 @@
+{
+  "kind": "storage#bucket",
+  "selfLink": "https://www.googleapis.com/storage/v1/b/example-bucket",
+  "id": "example-bucket",
+  "name": "example-bucket",
+  "projectNumber": "1212121212",
+  "metageneration": "1",
+  "location": "EU",
+  "storageClass": "STANDARD",
+  "etag": "CAE=",
+  "timeCreated": "2022-12-25T23:01:25.612Z",
+  "updated": "2022-12-25T23:01:25.612Z",
+  "iamConfiguration": {
+    "bucketPolicyOnly": {
+      "enabled": true,
+      "lockedTime": "2023-03-25T23:01:25.612Z"
+    },
+    "uniformBucketLevelAccess": {
+      "enabled": true,
+      "lockedTime": "2023-03-25T23:01:25.612Z"
+    },
+    "publicAccessPrevention": "enforced"
+  },
+  "locationType": "dual-region",
+  "customPlacementConfig": {
+    "dataLocations": [
+      "EUROPE-CENTRAL2",
+      "EUROPE-SOUTHWEST1"
+    ]
+  },
+  "rpo": "DEFAULT"
+}

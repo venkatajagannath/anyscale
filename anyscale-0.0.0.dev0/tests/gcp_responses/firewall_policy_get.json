@@ -1,0 +1,135 @@
+{
+    "kind": "compute#firewallPolicy",
+    "id": "793567031508267148",
+    "creationTimestamp": "2023-04-06T15:57:39.404-07:00",
+    "name": "mock-firewall-policy",
+    "description": "",
+    "rules": [
+      {
+        "kind": "compute#firewallPolicyRule",
+        "description": "",
+        "priority": 1000,
+        "match": {
+          "srcIpRanges": [
+            "0.0.0.0/0"
+          ],
+          "layer4Configs": [
+            {
+              "ipProtocol": "tcp",
+              "ports": [
+                "22",
+                "443"
+              ]
+            }
+          ]
+        },
+        "action": "allow",
+        "direction": "INGRESS",
+        "ruleTupleCount": 4
+      },
+      {
+        "kind": "compute#firewallPolicyRule",
+        "description": "",
+        "priority": 1001,
+        "match": {
+          "srcIpRanges": [
+            "10.0.0.0/20"
+          ],
+          "layer4Configs": [
+            {
+              "ipProtocol": "all"
+            }
+          ]
+        },
+        "action": "allow",
+        "direction": "INGRESS",
+        "ruleTupleCount": 2
+      },
+      {
+        "kind": "compute#firewallPolicyRule",
+        "description": "default egress rule",
+        "priority": 2147483644,
+        "match": {
+          "destIpRanges": [
+            "::/0"
+          ],
+          "layer4Configs": [
+            {
+              "ipProtocol": "all"
+            }
+          ]
+        },
+        "action": "goto_next",
+        "direction": "EGRESS",
+        "enableLogging": false,
+        "ruleTupleCount": 2
+      },
+      {
+        "kind": "compute#firewallPolicyRule",
+        "description": "default ingress rule",
+        "priority": 2147483645,
+        "match": {
+          "srcIpRanges": [
+            "::/0"
+          ],
+          "layer4Configs": [
+            {
+              "ipProtocol": "all"
+            }
+          ]
+        },
+        "action": "goto_next",
+        "direction": "INGRESS",
+        "enableLogging": false,
+        "ruleTupleCount": 2
+      },
+      {
+        "kind": "compute#firewallPolicyRule",
+        "description": "default egress rule",
+        "priority": 2147483646,
+        "match": {
+          "destIpRanges": [
+            "0.0.0.0/0"
+          ],
+          "layer4Configs": [
+            {
+              "ipProtocol": "all"
+            }
+          ]
+        },
+        "action": "goto_next",
+        "direction": "EGRESS",
+        "enableLogging": false,
+        "ruleTupleCount": 2
+      },
+      {
+        "kind": "compute#firewallPolicyRule",
+        "description": "default ingress rule",
+        "priority": 2147483647,
+        "match": {
+          "srcIpRanges": [
+            "0.0.0.0/0"
+          ],
+          "layer4Configs": [
+            {
+              "ipProtocol": "all"
+            }
+          ]
+        },
+        "action": "goto_next",
+        "direction": "INGRESS",
+        "enableLogging": false,
+        "ruleTupleCount": 2
+      }
+    ],
+    "fingerprint": "HZmehaZyDa4=",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/mock-project/global/firewallPolicies/mock-firewall-policy",
+    "selfLinkWithId": "https://www.googleapis.com/compute/v1/projects/mock-project/global/firewallPolicies/793567031508267148",
+    "associations": [
+      {
+        "name": "vpc-cld-congtest",
+        "attachmentTarget": "https://www.googleapis.com/compute/v1/projects/mock-project/global/networks/mock-vpc"
+      }
+    ],
+    "ruleTupleCount": 14
+  }

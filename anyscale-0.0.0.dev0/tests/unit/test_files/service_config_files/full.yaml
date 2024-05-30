@@ -1,0 +1,18 @@
+name: test-name-from-file
+image_uri: docker.io/library/test:latest
+applications:
+  - import_path: main:app
+compute_config:
+  cloud: test-cloud
+  head_node:
+    instance_type: m5.2xlarge
+working_dir: test-working-dir
+excludes: [test]
+requirements: [pip-install-test]
+query_auth_token_enabled: false
+http_options:
+  request_timeout_s: 10.0
+grpc_options:
+  grpc_servicer_functions: ["hello.world"]
+logging_config:
+  log_level: DEBUG

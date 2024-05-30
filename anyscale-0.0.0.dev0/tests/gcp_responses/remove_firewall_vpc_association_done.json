@@ -1,0 +1,14 @@
+{
+  "kind": "compute#operation",
+  "id": "2816916619897617644",
+  "name": "operation-1682539011446-5fa42a419174b-b229c5d2-8fe89a0c",
+  "operationType": "compute.networkFirewallPolicy.detach",
+  "targetLink": "https://www.googleapis.com/compute/v1/projects/mock-project/global/firewallPolicies/new-fp",
+  "targetId": "5763615895524142409",
+  "status": "DONE",
+  "user": "test@anyscale.com",
+  "progress": 0,
+  "insertTime": "2023-04-26T12:56:51.945-07:00",
+  "startTime": "2023-04-26T12:56:51.951-07:00",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/mock-project/global/operations/operation-1682539011446-5fa42a419174b-b229c5d2-8fe89a0c"
+}

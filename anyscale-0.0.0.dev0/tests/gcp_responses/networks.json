@@ -1,0 +1,17 @@
+{
+    "kind": "compute#network",
+    "id": "184486749957436685",
+    "creationTimestamp": "2022-04-13T10:44:02.848-07:00",
+    "name": "anyscale-vpc",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/project_name/global/networks/anyscale-vpc",
+    "selfLinkWithId": "https://www.googleapis.com/compute/v1/projects/project_name/global/networks/184486749957436685",
+    "autoCreateSubnetworks": false,
+    "subnetworks": [
+      "https://www.googleapis.com/compute/v1/projects/project_name/regions/us-central1/subnetworks/anyscale-subnetwork-0004",
+      "https://www.googleapis.com/compute/v1/projects/project_name/regions/us-central1/subnetworks/anyscale-subnetwork-0005"
+    ],
+    "routingConfig": {
+      "routingMode": "REGIONAL"
+    },
+    "networkFirewallPolicyEnforcementOrder": "AFTER_CLASSIC_FIREWALL"
+  }

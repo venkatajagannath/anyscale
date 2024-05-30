@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "etag": "BwX2lXLiGNo=",
+  "bindings": [
+    {
+      "role": "roles/cloudscheduler.serviceAgent",
+      "members": [
+        "serviceAccount:service-754754754754@gcp-sa-cloudscheduler.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/compute.admin",
+      "members": [
+        "serviceAccount:ray-autoscaler-sa-v1@anyscale-bridge-deadbeef.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/compute.serviceAgent",
+      "members": [
+        "serviceAccount:service-754754754754@compute-system.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/container.serviceAgent",
+      "members": [
+        "serviceAccount:service-754754754754@container-engine-robot.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/containerregistry.ServiceAgent",
+      "members": [
+        "serviceAccount:service-754754754754@containerregistry.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/editor",
+      "members": [
+        "serviceAccount:754754754754-compute@developer.gserviceaccount.com",
+        "serviceAccount:754754754754@cloudservices.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/file.serviceAgent",
+      "members": [
+        "serviceAccount:service-754754754754@cloud-filer.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/firebaserules.system",
+      "members": [
+        "serviceAccount:service-754754754754@firebase-rules.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/iam.roleViewer",
+      "members": [
+        "serviceAccount:ray-autoscaler-sa-v1@anyscale-bridge-deadbeef.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/iam.serviceAccountUser",
+      "members": [
+        "serviceAccount:ray-autoscaler-sa-v1@anyscale-bridge-deadbeef.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/memcache.serviceAgent",
+      "members": [
+        "serviceAccount:service-754754754754@cloud-memcache-sa.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/networkmanagement.serviceAgent",
+      "members": [
+        "serviceAccount:service-754754754754@gcp-sa-networkmanagement.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/owner",
+      "members": [
+        "serviceAccount:anyscale-admin@anyscale-bridge-deadbeef.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/pubsub.serviceAgent",
+      "members": [
+        "serviceAccount:service-754754754754@gcp-sa-pubsub.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/redis.serviceAgent",
+      "members": [
+        "serviceAccount:service-754754754754@cloud-redis.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/servicenetworking.serviceAgent",
+      "members": [
+        "serviceAccount:service-754754754754@service-networking.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/storage.objectAdmin",
+      "members": [
+        "serviceAccount:ray-autoscaler-sa-v1@anyscale-bridge-deadbeef.iam.gserviceaccount.com"
+      ]
+    }
+  ],
+  "auditConfigs": [
+    {
+      "service": "sts.googleapis.com",
+      "auditLogConfigs": [
+        {
+          "logType": "ADMIN_READ"
+        },
+        {
+          "logType": "DATA_READ"
+        },
+        {
+          "logType": "DATA_WRITE"
+        }
+      ]
+    }
+  ]
+}
