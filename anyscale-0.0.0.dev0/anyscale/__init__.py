@@ -116,6 +116,9 @@ class ServiceSDK:
 
     def wait(self, *args, **kwargs) -> Any:
         return anyscale.service.wait(*args, _sdk=self._private_sdk, **kwargs)
+    
+    def status(self, *args, **kwargs) -> Any:
+        return anyscale.service.status(*args, _sdk=self._private_sdk, **kwargs)
 
 
 class Anyscale:
