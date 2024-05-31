@@ -1,2 +1,0 @@
-[run]
-omit = anyscale/sdk/*,anyscale/anyscale_ray/*,anyscale/client/*,anyscale/shared_anyscale_utils/*

@@ -1,2 +1,0 @@
-entrypoint: python test.py
-requirements: some_requirements_file.txt
