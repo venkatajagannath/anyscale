@@ -1,12 +1,8 @@
 
 from datetime import datetime, timedelta
 from airflow import DAG
-import os
 
 from anyscale_provider.operators.anyscale import RolloutAnyscaleService
-
-from airflow.models.connection import Connection
-from airflow.utils.dates import days_ago
 
 default_args = {
     'owner': 'airflow',

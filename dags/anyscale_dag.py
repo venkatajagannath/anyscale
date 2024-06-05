@@ -1,12 +1,7 @@
 from datetime import datetime, timedelta
 from airflow import DAG
-import os
 # Assuming these hooks and operators are custom or provided by a plugin
 from anyscale_provider.operators.anyscale import SubmitAnyscaleJob
-
-from airflow.models.connection import Connection
-from airflow.providers.amazon.aws.transfers.local_to_s3 import LocalFilesystemToS3Operator
-from airflow.utils.dates import days_ago
 
 default_args = {
     'owner': 'airflow',
@@ -22,10 +17,7 @@ default_args = {
 ANYSCALE_CONN_ID = "anyscale_conn"
 
 # Constants
-BUCKET_NAME = 'anyscale-production-data-cld-g7m5cn8nnhkydikcjc6lj4ekye'
 FOLDER_PATH = '/usr/local/airflow/dags/ray_scripts'
-FILE_PATH = '/usr/local/airflow/dags/ray_scripts/script.py'
-AWS_CONN_ID = 'aws_conn'
 
 dag = DAG(
     'anyscale_workflow',
@@ -33,20 +25,6 @@ dag = DAG(
     description='A DAG to interact with Anyscale triggered manually',
     schedule_interval=None,  # This DAG is not scheduled, only triggered manually
     catchup=False,
-)
-
-# Extract the filename from the file path for S3 key construction
-filename = os.path.basename(FILE_PATH)
-s3_key = f'scripts/{filename}'
-
-upload_file_to_s3 = LocalFilesystemToS3Operator(
-    task_id='upload_file_to_s3',
-    filename=FILE_PATH,
-    dest_key=s3_key,
-    dest_bucket=BUCKET_NAME,
-    aws_conn_id=AWS_CONN_ID,
-    replace=True,
-    dag=dag
 )
 
 submit_anyscale_job = SubmitAnyscaleJob(
@@ -64,4 +42,4 @@ submit_anyscale_job = SubmitAnyscaleJob(
 
 
 # Defining the task sequence
-upload_file_to_s3 >> submit_anyscale_job
+submit_anyscale_job
